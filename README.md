@@ -15,6 +15,7 @@ This is not a scientific or medical tool. Use at your own risk. BETA! There migh
 * Delays to allow for lagging official data etc.
 * hopefully easily readable code
 * Real world data automatically updated every three hours from Johns Hopkins CSSE (https://github.com/CSSEGISandData/2019-nCoV) via via https://github.com/ExpDev07/coronavirus-tracker-api
+* check out screenshots below
 
 ## Installation / Requirements / Documentation
 Needs Python 3.x installed. Tested on Ubuntu. Should run on Window and Mac, too.
@@ -41,11 +42,6 @@ No GUI, you need to alter the script and run again to experiment.
   
 Note: Make sure you got correct number for population and available ICU units for your country.
   
-## Screenshots
-![model run](https://github.com/coronafighter/coronaSEIR/blob/master/screenshots/model_run.png)
-![model run](https://github.com/coronafighter/coronaSEIR/blob/master/screenshots/model_run2.png)
-![data](https://github.com/coronafighter/coronaSEIR/blob/master/screenshots/data.png)
-
 ## ToDo
 * maybe find a better fit with lower R0
 * add proper list of populations
@@ -77,6 +73,10 @@ https://www.medrxiv.org/content/10.1101/2020.03.05.20031815v1
 http://www.cidrap.umn.edu/news-perspective/2020/03/short-time-between-serial-covid-19-cases-may-hinder-containment  
 some more in the source code
 
+## Screenshots
+![model run](https://github.com/coronafighter/coronaSEIR/blob/master/screenshots/model_run.png)
+![model run](https://github.com/coronafighter/coronaSEIR/blob/master/screenshots/model_run2.png)
+![data](https://github.com/coronafighter/coronaSEIR/blob/master/screenshots/data.png)
+
 ## License
 MIT license
-
