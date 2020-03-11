@@ -42,9 +42,9 @@ No GUI, you need to alter the script and run again to experiment.
 Note: Make sure you got correct number for population and available ICU units for your country.
   
 ## Screenshots
-![model run](https://github.com/coronafighter/coronaSEIR/blob/master/screenshot/model_run.png)
-![model run](https://github.com/coronafighter/coronaSEIR/blob/master/screenshot/model_run2.png)
-![data](https://github.com/coronafighter/coronaSEIR/blob/master/screenshot/data.png)
+![model run](https://github.com/coronafighter/coronaSEIR/blob/master/screenshots/model_run.png)
+![model run](https://github.com/coronafighter/coronaSEIR/blob/master/screenshots/model_run2.png)
+![data](https://github.com/coronafighter/coronaSEIR/blob/master/screenshots/data.png)
 
 ## ToDo
 * maybe find a better fit with lower R0
