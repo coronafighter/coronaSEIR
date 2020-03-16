@@ -38,6 +38,8 @@ first data: 2020-01-31
 latest data: 2020-03-10 (you can update the data manually by running fetch_data.py)
 
 $python3 ./world_data.py  # to just plot current numbers
+
+$python3 ./deaths_per_capita.py  # might be a better measure than cases per capita
 ```  
 No GUI, you need to alter the script and run again to experiment.  
   
