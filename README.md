@@ -15,6 +15,7 @@ This is not a scientific or medical tool. Use at your own risk. BETA! There migh
 * Delays to allow for lagging official data etc.
 * hopefully easily readable code
 * Real world data automatically updated every three hours from Johns Hopkins CSSE (https://github.com/CSSEGISandData/2019-nCoV) via via https://github.com/ExpDev07/coronavirus-tracker-api
+* country population data (https://github.com/samayo/country-json)
 * check out screenshots below
 
 ## Installation / Requirements / Documentation
@@ -43,6 +44,7 @@ No GUI, you need to alter the script and run again to experiment.
 Note: Make sure you got correct number for population and available ICU units for your country.
   
 ## ToDo
+* automatic date offset
 * maybe find a better fit with lower R0
 * add proper list of populations
 * add data about intensive care units
@@ -56,8 +58,9 @@ Based on:
 https://github.com/ckaus/EpiPy  
 https://scipython.com/book/chapter-8-scipy/additional-examples/the-sir-epidemic-model/  
   
-API:  
-https://github.com/ExpDev07/coronavirus-tracker-api  
+API/Data:
+https://github.com/ExpDev07/coronavirus-tracker-api
+https://github.com/samayo/country-json
   
 Formulas:  
 https://hal.archives-ouvertes.fr/hal-00657584/document  

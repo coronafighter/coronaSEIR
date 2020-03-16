@@ -5,16 +5,18 @@ import matplotlib.pyplot as plt
 import matplotlib.widgets  # Cursor
 
 import world_data
+import population
 
 COUNTRY = 'Italy'  #South Korea'  #  e.g. 'France'  'Republic of Korea' 'Italy' 'Germany' 
 PROVINCE = 'all'  #'all'  # 'Hubei'
 
-populations = {'Germany' : 81E6, 'France' : 67E6, 'Italy' : 61E6, 'Iran' : 81E6,
-               'Mainland China' : 1438E6, 'Hubei' : 59E6, 'Republic of Korea' : 51E6}
+#populations = {'Germany' : 81E6, 'France' : 67E6, 'Italy' : 61E6, 'Iran' : 81E6,
+               #'China' : 1438E6, 'Hubei' : 59E6, 'Republic of Korea' : 51E6}
+
 if PROVINCE == 'all':
-    population = populations[COUNTRY]
+    population = population.get_population(COUNTRY)
 else:
-    population = populations[PROVINCE]
+    population = populations[PROVINCE]  # to be implemented
 
 intensiveUnits = 14000 / 2  # ICU units available  # Germany: 28000  
 
@@ -122,13 +124,13 @@ print_info(days0)
 print_info(days - 1)
 
 # Plot
-fig = plt.figure(figsize=(10,10), dpi=200)
+fig = plt.figure(dpi=75, figsize=(20,16))
 ax = fig.add_subplot(111)
 if logPlot:
     ax.set_yscale("log", nonposy='clip')
-    
+
 #ax.plot(X, S, 'b', alpha=0.5, lw=2, label='Susceptible')
-#ax.plot(X, E, 'y', alpha=0.5, lw=2, label='Exposed')
+ax.plot(X, E, 'y', alpha=0.5, lw=2, label='Exposed')
 ax.plot(X, I, 'r--', alpha=0.5, lw=1, label='Infected')
 ax.plot(X, F, color='orange', alpha=0.5, lw=1, label='Found')
 ax.plot(X, H, 'r', alpha=0.5, lw=2, label='ICU')
@@ -151,7 +153,7 @@ ax.set_xlabel('Time /days')
 ax.set_ylabel('Number (1000s)')
 ax.set_ylim(bottom=1.0)
 
-ax.grid(b=True, which='major', c='w', lw=2, ls='-')
+ax.grid(linestyle=':')  #b=True, which='major', c='w', lw=2, ls='-')
 legend = ax.legend(title='COVID-19 SEIR model: ' + COUNTRY + " " + PROVINCE +
                    ' %dk' % (population / 1000) + ' (beta)')
 legend.get_frame().set_alpha(0.5)

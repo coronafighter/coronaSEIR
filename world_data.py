@@ -19,7 +19,8 @@ if (not os.path.exists(FILENAME) or
 
 with open(FILENAME) as f:
     s = f.read()
-    s = s.replace('Iran (Islamic Republic of)', 'Iran')
+    s = s.replace('Iran (Islamic Republic of)', 'Iran')  # obsolete?
+    s = s.replace('Mainland China', 'China')  # obsolete ?
     print("read data: %i bytes" % len(s))
 d = json.loads(s)
 
@@ -68,7 +69,7 @@ def get_country_xcdr(country='all', province='all', dateOffset=0, returnLists=Fa
     for date in dictXYYY:
         day = (date - min(XDatesAll)).days + dateOffset
         C, D, R = dictXYYY[date][0], dictXYYY[date][1], dictXYYY[date][2]
-        if C + D + R > 0:
+        if (C + D + R) > 0:
             listXYYY.append((day, C, D, R))
             XDatesAllNonEmpty.append(date)
     listXYYY.sort()  # in place by first item
@@ -82,7 +83,7 @@ def get_country_xcdr(country='all', province='all', dateOffset=0, returnLists=Fa
         return countries, provinces
 
     if len(listXYYY) == 0:
-        countries, provinces = get_countries(country)
+        countries, provinces = get_countries()
         if not country in countries:
             print(countries)
         if not province in provinces:
@@ -98,8 +99,8 @@ def get_country_xcdr(country='all', province='all', dateOffset=0, returnLists=Fa
     return listXYYY
 
 
-def get_countries(country):
-    countries, provinces = get_country_xcdr(country, returnLists=True)
+def get_countries_provinces():
+    countries, provinces = get_country_xcdr(returnLists=True)
     return countries, provinces
 
 if __name__ == '__main__':
