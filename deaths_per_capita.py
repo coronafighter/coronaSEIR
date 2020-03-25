@@ -1,3 +1,4 @@
+import sys
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -6,29 +7,39 @@ import world_data
 
 countries, provinces = world_data.get_countries_provinces()
 countryPopulation = population.get_all_population_data()
+countries.extend(['Hubei'])
+
+# todo: single loop, cleanup
 
 countryDeaths = []
 for country in countries:
     try:
         if countryPopulation[country] < 1000000:
             continue
-        XCDR_data = np.array(world_data.get_country_xcdr(country))
+        province = 'all'
+        country2 = country
+        if country == 'Hubei':
+            country2 = 'China'
+            province = 'Hubei'
+        XCDR_data = np.array(world_data.get_country_xcdr(country2, province=province,
+                                                         returnDates=True))
         cases = int(XCDR_data[-1, 1])  # last row, third column
         deaths = int(XCDR_data[-1, 2])  # last row, third column
         if deaths < 10:
             continue
-        recovered = int(XCDR_data[-1, 3])  # last row, third column            
-        countryDeaths.append((country, cases, deaths, recovered))
+        recovered = int(XCDR_data[-1, 3])  # last row, third column
+        date = XCDR_data[-1, 0]
+        countryDeaths.append((country, cases, deaths, recovered, date))
 
-    except:
-        print("fail: ", country)
+    except Exception as e:
+        print("fail: ", country, sys.exc_info()[0], e)
 
 countryDeathsPC = []
-for ccdr in countryDeaths:
-    country, cases, deaths, recovered = ccdr
+for ccdrd in countryDeaths:
+    country, cases, deaths, recovered, date = ccdrd
     try:
         pop = population.get_population(country)
-        countryDeathsPC.append((country, deaths * 1.0e6 / pop, deaths, pop))
+        countryDeathsPC.append((country, deaths * 1.0e6 / pop, deaths, pop, date))
         #countryDeathrate.append((country, 100.0 * deaths / cases, deaths, pop))
     except KeyError:
         print("fail: ", country)
@@ -39,8 +50,13 @@ countryDeathsPC.reverse()  # in place
 
 
 dCountryDeathsPCXY = {}
-for country, trash, trash, trash in countryDeathsPC[0:20]:
-    XCDR_data = np.array(world_data.get_country_xcdr(country))
+for country, trash, trash, trash, trash in countryDeathsPC[0:20]:
+    province = 'all'
+    country2 = country
+    if country == 'Hubei':
+        country2 = 'China'
+        province = 'Hubei'
+    XCDR_data = np.array(world_data.get_country_xcdr(country2, province=province, returnDates=True))
     pop = population.get_population(country)
     #Y = 100.0 * XCDR_data[:,2] / XCDR_data[:,1] 
     Y = XCDR_data[:,2] / pop * 1.0e6
@@ -59,7 +75,7 @@ legend = ax.legend(title='deaths per 1M capita (beta)')
 
 print()
 print('beta, there might be bugs')
-for country, deathsPC, deaths, pop in countryDeathsPC[0:20]:
-    print("%-15s" % country, ': %10.1f %5d %10d' % (deathsPC, deaths, pop))
+for country, deathsPC, deaths, pop, date in countryDeathsPC[0:20]:
+    print("%-15s" % country, ': %10.1f %5d %10d %s' % (deathsPC, deaths, pop, date.strftime("%Y-%m-%d")))
 
 plt.show()

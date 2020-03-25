@@ -14,7 +14,7 @@ This is not a scientific or medical tool. Use at your own risk. BETA! There migh
 * Reduced R0 after a certain amount of days to account for containment measures.
 * Delays to allow for lagging official data etc.
 * hopefully easily readable code
-* Real world data automatically updated every three hours from Johns Hopkins CSSE (https://github.com/CSSEGISandData/2019-nCoV) via via https://github.com/ExpDev07/coronavirus-tracker-api
+* Real world data automatically updated every three hours from Johns Hopkins CSSE (https://github.com/CSSEGISandData/2019-nCoV) via https://github.com/ExpDev07/coronavirus-tracker-api
 * country population data (https://github.com/samayo/country-json)
 * check out screenshots below
 
@@ -46,6 +46,7 @@ No GUI, you need to alter the script and run again to experiment.
 Note: Make sure you got correct number for population and available ICU units for your country.
   
 ## ToDo
+* idea: compare optimal fit doubling time for all countries
 * automatic date offset
 * maybe find a better fit with lower R0
 * add proper list of populations

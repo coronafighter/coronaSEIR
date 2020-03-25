@@ -10,6 +10,8 @@ for item in countryByPopulationJson:
         continue
     countryPopulation[item['country']] = int(item['population'])
 
+cp2 = {}
+
 # some fixes
 countryPopulation['US'] = countryPopulation['United States']
 countryPopulation['Czechia'] = countryPopulation["Czech Republic"]
@@ -17,11 +19,13 @@ countryPopulation['Korea, South'] = countryPopulation['South Korea']
 countryPopulation['Korea, North'] = countryPopulation['North Korea']
 countryPopulation['Taiwan*'] = 23574274
 countryPopulation['Serbia'] = 7057666
+
+cp2['Hubei'] = 59E6
 # ...
 
 countries, provinces = world_data.get_countries_provinces()
 
-cp2 = {}
+
 for country in countries:
     if country in countryPopulation:
         cp2[country] = countryPopulation[country]

@@ -24,7 +24,8 @@ with open(FILENAME) as f:
     print("read data: %i bytes" % len(s))
 d = json.loads(s)
 
-def get_country_xcdr(country='all', province='all', dateOffset=0, returnLists=False):
+def get_country_xcdr(country='all', province='all', excludeCountries=[], excludeProvinces=[],
+                     dateOffset=0, returnLists=False, returnDates=False):
     country = '' if country == 'all' else country  # empty string is same as all
     province = '' if province == 'all' else province
     countries = {}
@@ -43,13 +44,22 @@ def get_country_xcdr(country='all', province='all', dateOffset=0, returnLists=Fa
         countries[str(location['country'])] = 1
         if country != '' and location['country'] != country:
             continue
+        if location['country'] in excludeCountries:
+            print("Excluded country:", location['country'])
+            continue
         provinces[str(location['province'])] = 1
         if province != '' and location['province'] != province:
+            continue
+        if location['province'] in excludeProvinces:  # global provinces can't have the same name
+            print("Excluded province:", province)
             continue
         for date in location['history']:
             confirmed = int(location['history'][date])
             deaths = int(d['deaths']['locations'][i]['history'][date])
-            recovered = int(d['recovered']['locations'][i]['history'][date])
+            try:
+                recovered = int(d['recovered']['locations'][i]['history'][date])
+            except KeyError:
+                recovered = 0
             XDates.append(dateutil.parser.parse(date))
             YConfirmed.append(confirmed)
             YDeaths.append(deaths)
@@ -70,7 +80,11 @@ def get_country_xcdr(country='all', province='all', dateOffset=0, returnLists=Fa
         day = (date - min(XDatesAll)).days + dateOffset
         C, D, R = dictXYYY[date][0], dictXYYY[date][1], dictXYYY[date][2]
         if (C + D + R) > 0:
-            listXYYY.append((day, C, D, R))
+            if returnDates:
+                x = date
+            else:
+                x = day
+            listXYYY.append((x, C, D, R))
             XDatesAllNonEmpty.append(date)
     listXYYY.sort()  # in place by first item
     
@@ -83,7 +97,7 @@ def get_country_xcdr(country='all', province='all', dateOffset=0, returnLists=Fa
         return countries, provinces
 
     if len(listXYYY) == 0:
-        countries, provinces = get_countries()
+        countries, provinces = get_countries_provinces()
         if not country in countries:
             print(countries)
         if not province in provinces:
@@ -97,7 +111,6 @@ def get_country_xcdr(country='all', province='all', dateOffset=0, returnLists=Fa
     print("latest data: %s (you can update the data manually by running fetch_data.py)" % max(XDatesAll).date())
 
     return listXYYY
-
 
 def get_countries_provinces():
     countries, provinces = get_country_xcdr(returnLists=True)
@@ -123,17 +136,18 @@ if __name__ == '__main__':
 
     ax2 = fig.add_subplot(212)
 
-    COUNTRY = 'Mainland China'
-    PROVINCE = 'Hubei'
+    COUNTRY = 'all'
+    excludeCountries = ['China']
+    PROVINCE = 'all'
 
-    XYYY = np.array(get_country_xcdr(COUNTRY, PROVINCE))
+    XYYY = np.array(get_country_xcdr(COUNTRY, PROVINCE, excludeCountries=excludeCountries))
     X = XYYY[:,0]
 
     #ax2.set_yscale("log", nonposy='clip')
     ax2.plot(X, XYYY[:,1], 'b', alpha=0.5, lw=2, label='confirmed')
     ax2.plot(X, XYYY[:,2], 'y', alpha=0.5, lw=2, label='deaths')
     ax2.plot(X, XYYY[:,3], 'r--', alpha=0.5, lw=1, label='recovered')
-    ax2.legend(title='COVID-19 data (beta): ' + COUNTRY + " " + PROVINCE)
+    ax2.legend(title='COVID-19 data (beta): all but China')
     plt.show()
     #plt.savefig('data.png')
 
