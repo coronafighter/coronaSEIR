@@ -4,26 +4,21 @@ import datetime
 import os.path
 import time
 
-import scipy.ndimage.interpolation  # shift function
-def delay(npArray, days):
-    return scipy.ndimage.interpolation.shift(npArray, days, cval=0)
-
+import shared
 import fetch_data
 
-FILENAME = fetch_data.FILENAME
-CACHETIMESECONDS = 3600 * 3  # be nice to the API to not get banned
-
-if (not os.path.exists(FILENAME) or 
-    os.path.getmtime(FILENAME) < time.time() - CACHETIMESECONDS):
+if (not os.path.exists(shared.FILENAME) or 
+    os.path.getmtime(shared.FILENAME) < time.time() - shared.CACHETIMESECONDS):
         fetch_data.fetch()
 
-with open(FILENAME) as f:
+with open(shared.FILENAME) as f:
     s = f.read()
     s = s.replace('Iran (Islamic Republic of)', 'Iran')  # obsolete?
     s = s.replace('Mainland China', 'China')  # obsolete ?
     print("read data: %i bytes" % len(s))
 d = json.loads(s)
 
+# todo check for unknown excluded countries
 def get_country_xcdr(country='all', province='all', excludeCountries=[], excludeProvinces=[],
                      dateOffset=0, returnLists=False, returnDates=False):
     country = '' if country == 'all' else country  # empty string is same as all
@@ -33,7 +28,7 @@ def get_country_xcdr(country='all', province='all', excludeCountries=[], exclude
 
     dictXYYY = {}
     XDatesAll = []
-
+    
     for i, location in enumerate(d['confirmed']['locations']):
         XDates = []
         YConfirmed = []
@@ -42,17 +37,20 @@ def get_country_xcdr(country='all', province='all', excludeCountries=[], exclude
         listXYYY = []
 
         countries[str(location['country'])] = 1
+        provinces[str(location['province'])] = 1
+
         if country != '' and location['country'] != country:
             continue
         if location['country'] in excludeCountries:
-            print("Excluded country:", location['country'])
+            print("Excluded country/province:", location['country'], location['province'])
             continue
-        provinces[str(location['province'])] = 1
+
         if province != '' and location['province'] != province:
             continue
         if location['province'] in excludeProvinces:  # global provinces can't have the same name
-            print("Excluded province:", province)
+            print("Excluded country/province:", location['country'], location['province'])
             continue
+    
         for date in location['history']:
             confirmed = int(location['history'][date])
             deaths = int(d['deaths']['locations'][i]['history'][date])
@@ -112,7 +110,7 @@ def get_country_xcdr(country='all', province='all', excludeCountries=[], exclude
 
     return listXYYY
 
-def get_countries_provinces():
+def get_countries_provinces():  # todo: make this a separate function for easier readability
     countries, provinces = get_country_xcdr(returnLists=True)
     return countries, provinces
 

@@ -1,10 +1,9 @@
 import urllib.request
 
-URL = 'https://coronavirus-tracker-api.herokuapp.com/all'
-FILENAME = 'covid-19_data.json'
+import shared
 
 def fetch():
-    url = urllib.request.urlopen(urllib.request.Request(URL, headers={
+    url = urllib.request.urlopen(urllib.request.Request(shared.APIURL, headers={
         'User-Agent' : 'https://github.com/coronafighter/coronaSEIR'}))
     r = url.read()
     
@@ -13,7 +12,7 @@ def fetch():
     if len(r) < 1000:
         raise Exception("fetch_data.py read less than 1000 bytes")
     
-    with open(FILENAME, 'wb') as f:
+    with open(shared.FILENAME, 'wb') as f:
         f.write(r)
     
 if __name__ == '__main__':
