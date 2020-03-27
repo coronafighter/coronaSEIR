@@ -58,7 +58,7 @@ def get_country_xcdr(country='all', province='all', excludeCountries=[], exclude
             deaths = int(d['deaths']['locations'][i]['history'][date])
             try:
                 recovered = int(d['recovered']['locations'][i]['history'][date])
-            except KeyError:
+            except (KeyError, IndexError):
                 recovered = 0
             XDates.append(dateutil.parser.parse(date))
             YConfirmed.append(confirmed)
