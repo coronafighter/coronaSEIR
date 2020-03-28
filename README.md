@@ -83,15 +83,15 @@ https://hal.archives-ouvertes.fr/hal-00657584/document
 https://institutefordiseasemodeling.github.io/Documentation/general/model-seir.html  
   
 Parameters:  
-https://www.reddit.com/r/COVID19/comments/fbdzc1/coronavirus_epidemiology_metaanalysis_and/
-https://www.reddit.com/r/COVID19/comments/fbxk43/update_open_source_simple_coronavirus_modeling/
+https://www.reddit.com/r/COVID19/comments/fbdzc1/coronavirus_epidemiology_metaanalysis_and/  
+https://www.reddit.com/r/COVID19/comments/fbxk43/update_open_source_simple_coronavirus_modeling/  
 timeline https://www.reddit.com/r/COVID19/comments/fd6lmg/infectionfatalityratio_ifr_of_covid19_is/  
 https://www.reddit.com/r/COVID19/comments/ffzqzl/estimating_the_asymptomatic_proportion_of_2019/  
 https://www.reddit.com/r/Coronavirus/comments/f8k2nj/why_sarscov2_is_not_just_the_flu_with_sources/ 
 gamma: Generation time (serial interval): https://www.medrxiv.org/content/10.1101/2020.03.05.20031815v1  
-gamma: http://www.cidrap.umn.edu/news-perspective/2020/03/short-time-between-serial-covid-19-cases-may-hinder-containment  
+also: http://www.cidrap.umn.edu/news-perspective/2020/03/short-time-between-serial-covid-19-cases-may-hinder-containment  
 Relationship hospitalized/ICU/death https://www.imperial.ac.uk/media/imperial-college/medicine/sph/ide/gida-fellowships/Imperial-College-COVID19-NPI-modelling-16-03-2020.pdf  
-r0 ~ 3 https://www.newscientist.com/article/2238578-uk-has-enough-intensive-care-units-for-coronavirus-expert-predicts/
+r0 ~ 3 https://www.newscientist.com/article/2238578-uk-has-enough-intensive-care-units-for-coronavirus-expert-predicts/  
 sigma: Infection occurs before symptoms (Drosten): https://www.medrxiv.org/content/10.1101/2020.03.08.20032946v1.full.pdf  
 Number of asymptomatics: https://www.zmescience.com/medicine/iceland-testing-covid-19-0523/  
 some more in the source code

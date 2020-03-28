@@ -32,20 +32,23 @@ dataOffset = 'auto'  # position of real world data relative to model in whole da
 
 days0 = 63  # Germany:57  days before lockdown measures - you might need to adjust this according to output "lockdown measures start:"
 
-r0 = 3.1 # Germany: 3.5 world: https://en.wikipedia.org/wiki/Basic_reproduction_number  - 3 just does not seem enough
+r0 = 2.5 # Germany: 3.5 world: https://en.wikipedia.org/wiki/Basic_reproduction_number
 r1 = 1.0  # reproduction number after quarantine measures  -  needs source
 
 timePresymptomatic = 2.5  # almost half infections take place before symptom onset (Drosten) https://www.medrxiv.org/content/10.1101/2020.03.08.20032946v1.full.pdf  
 
 # I in this model is maybe better described as 'infectious'?
-gamma = 1.0 / 4.6  # The rate an infected recovers and moves into the resistant phase. 1 / serial interval ?
-sigma = 1.0 / (5.2 - timePresymptomatic)  # The rate at which an exposed person becomes infective.  symptom onset - presympomatic
+sigma = 1.0 / (5.2 - timePresymptomatic)  # The rate at which an exposed person becomes infectious.  symptom onset - presympomatic
+# for SEIR: generationTime = 1/sigma + 1/gamma = timeFromInfectionToInfectiousness + timeInfectious  https://hal.archives-ouvertes.fr/hal-00657584/document page 13
+generationTime = 4.6  # https://www.medrxiv.org/content/10.1101/2020.03.05.20031815v1  http://www.cidrap.umn.edu/news-perspective/2020/03/short-time-between-serial-covid-19-cases-may-hinder-containment
+gamma = 1.0 / (generationTime - 1.0/sigma)  # The rate an infectious is not recovers and moves into the resistant phase. Note that for the model it only means he does not infect anybody any more. Why so low?
+print("sigma: %.3f  1/sigma: %.3f    gamma: %.3f  1/gamma: %.3f" % (sigma, 1.0/sigma, gamma, 1.0/gamma))
 
 noSymptoms = 0.35  # https://www.zmescience.com/medicine/iceland-testing-covid-19-0523/  but virus can already be found in throat 2.5 days before symptoms (Drosten)
 findRatio = (1 - noSymptoms) / 2  # wild guess! italy:16? germany:2 a lot of the mild cases will go undetected  assuming 100% correct tests
 
 timeInHospital = 12
-timeInfected = 1.0 / gamma  # better timeInfectious?  same as serial interval?
+timeInfected = 1.0 / gamma  # better timeInfectious?
 
 # lag, whole days - need sources
 presymptomaticLag = round(timePresymptomatic)  # effort probably not worth to be more precise than 1 day
