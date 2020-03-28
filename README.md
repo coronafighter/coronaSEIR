@@ -21,12 +21,15 @@ This is not a scientific or medical tool. Use at your own risk. BETA! There migh
 * hopefully easily readable code
 * Real world data automatically updated every three hours from Johns Hopkins CSSE (https://github.com/CSSEGISandData/2019-nCoV) via https://github.com/ExpDev07/coronavirus-tracker-api
 * country population data (https://github.com/samayo/country-json)
+* can exclude countries, e.g. world without China
 * check out screenshots below
 
 ## Installation / Requirements / Documentation
 Needs Python 3.x installed. Tested on Ubuntu. Should run on Window and Mac, too.
   
 ```
+# everything after the hash symbol # is a comment
+$ git clone https://github.com/coronafighter/coronaSEIR  # create local copy
 $ pip3 install --upgrade numpy scipy matplotlib python-dateutil  # might need sudo -H pip3 ...
 $ python3 ./main_coronaSEIR.py
 read data: 843103 bytes
@@ -45,6 +48,9 @@ latest data: 2020-03-10 (you can update the data manually by running fetch_data.
 $python3 ./world_data.py  # to just plot current numbers
 
 $python3 ./deaths_per_capita.py  # might be a better measure than cases per capita
+
+$ git pull origin master  # update to latest version, might overwrite local changes
+
 ```  
 No GUI, you need to alter the script and run again to experiment.  
   
@@ -52,14 +58,16 @@ Note: Make sure you got correct number for population and available ICU units fo
   
 ## ToDo
 * idea: compare optimal fit doubling time for all countries
-* automatic date offset
-* maybe find a better fit with lower R0
-* add proper list of populations
+* idea: compare death rate by testing capacity --> extrapolate fit curve to find real death rate
+* make R0 and days0 lists to be able to have more than two phases
 * add data about intensive care units
-* use real dates instead of days?
 * ventilator patients separately?
 * make parsing code cleaner / simpler
 * be more precise in differentiation between hospitalization and ICU
+* X automatic date offset
+* X maybe find a better fit with lower R0 - the infectious time seems to be quite short?
+* X add proper list of populations
+* X use real dates instead of days?
 
 ## Credits
 Based on:  
@@ -77,7 +85,7 @@ https://institutefordiseasemodeling.github.io/Documentation/general/model-seir.h
 Parameters:  
 https://www.reddit.com/r/COVID19/comments/fbdzc1/coronavirus_epidemiology_metaanalysis_and/
 https://www.reddit.com/r/COVID19/comments/fbxk43/update_open_source_simple_coronavirus_modeling/
-https://www.reddit.com/r/COVID19/comments/fd6lmg/infectionfatalityratio_ifr_of_covid19_is/  
+timeline https://www.reddit.com/r/COVID19/comments/fd6lmg/infectionfatalityratio_ifr_of_covid19_is/  
 https://www.reddit.com/r/COVID19/comments/ffzqzl/estimating_the_asymptomatic_proportion_of_2019/  
 https://www.reddit.com/r/Coronavirus/comments/f8k2nj/why_sarscov2_is_not_just_the_flu_with_sources/ 
 gamma: Generation time (serial interval): https://www.medrxiv.org/content/10.1101/2020.03.05.20031815v1  

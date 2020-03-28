@@ -3,65 +3,69 @@ import numpy as np
 import scipy.integrate
 import matplotlib.pyplot as plt
 import matplotlib.widgets  # Cursor
+import matplotlib.dates
 
+import shared
 import world_data
 import population
 
-COUNTRY = 'Italy'  #South Korea'  #  e.g. 'France'  'Republic of Korea' 'Italy' 'Germany' 
-PROVINCE = 'all'  #'all'  # 'Hubei'
+COUNTRY = 'Germany'  # e.g. 'all' 'South Korea' 'France'  'Republic of Korea' 'Italy' 'Germany' 
+PROVINCE = 'all'  # 'all' 'Hubei'  # for provinces other than Hubei the population value needs to be set manually
+EXCLUDECOUNTRIES = ['China'] if COUNTRY == 'all' else []  # massive measures early on
 
-#populations = {'Germany' : 81E6, 'France' : 67E6, 'Italy' : 61E6, 'Iran' : 81E6,
-               #'China' : 1438E6, 'Hubei' : 59E6, 'Republic of Korea' : 51E6}
+population = population.get_population(COUNTRY, PROVINCE, EXCLUDECOUNTRIES)
 
-if PROVINCE == 'all':
-    population = population.get_population(COUNTRY)
+# --- parameters ---
+
+if COUNTRY == 'Germany':
+    intensiveUnits = 28000 / 1.5 / 2  # ICU units available  # Germany: 28000  # note that infections might show up in local clusters making things worse
 else:
-    population = populations[PROVINCE]  # to be implemented
+    intensiveUnits = population * 1.0 / 1000  # rough guess
 
-intensiveUnits = 14000 / 2  # ICU units available  # Germany: 28000  
+#intensiveUnits = ...  # your country
 
-
-logPlot = True
+logPlot = 1
 
 E0 = 1  # exposed at initial time step
+daysTotal = 365  # total days to model
+dataOffset = 'auto'  # position of real world data relative to model in whole days. 'auto' will choose optimal offset based on matching of deaths curves
 
-days = 165  # total days to model
+days0 = 63  # Germany:57  days before lockdown measures - you might need to adjust this according to output "lockdown measures start:"
 
-dataOffset = 25 # how many days will the real world country data be delayed in the model
+r0 = 3.1 # Germany: 3.5 world: https://en.wikipedia.org/wiki/Basic_reproduction_number  - 3 just does not seem enough
+r1 = 1.0  # reproduction number after quarantine measures  -  needs source
 
-days0 = dataOffset + 35  # days before lockdown measures
+timePresymptomatic = 2.5  # almost half infections take place before symptom onset (Drosten) https://www.medrxiv.org/content/10.1101/2020.03.08.20032946v1.full.pdf  
 
-beta0 = 1.0 / 2.5  # The parameter controlling how often a susceptible-infected contact results in a new infection.
-beta1 = beta0 / 4  # beta0 is used during days0 phase, beta1 after days0
+# I in this model is maybe better described as 'infectious'?
+gamma = 1.0 / 4.6  # The rate an infected recovers and moves into the resistant phase. 1 / serial interval ?
+sigma = 1.0 / (5.2 - timePresymptomatic)  # The rate at which an exposed person becomes infective.  symptom onset - presympomatic
 
-gamma = 1.0 / (10 + 3)  # The rate an infected recovers and moves into the resistant phase.
-sigma = 1.0 / (5 - 3)  # The rate at which an exposed person becomes infective.
-  # https://www.reddit.com/r/COVID19/comments/fgark3/estimating_the_generation_interval_for_covid19/
-  # three days shorter because it seems there are earlier infections, goes into gamma
-
-noSymptoms = 0.2  # https://www.reddit.com/r/COVID19/comments/ffzqzl/estimating_the_asymptomatic_proportion_of_2019/
-findRatio = (1 - noSymptoms) / 4  # a lot of the mild cases will go undetected  assuming 100% correct tests
+noSymptoms = 0.35  # https://www.zmescience.com/medicine/iceland-testing-covid-19-0523/  but virus can already be found in throat 2.5 days before symptoms (Drosten)
+findRatio = (1 - noSymptoms) / 2  # wild guess! italy:16? germany:2 a lot of the mild cases will go undetected  assuming 100% correct tests
 
 timeInHospital = 12
-timeInfected = 1.0 / gamma
+timeInfected = 1.0 / gamma  # better timeInfectious?  same as serial interval?
 
-# lag, whole days
+# lag, whole days - need sources
+presymptomaticLag = round(timePresymptomatic)  # effort probably not worth to be more precise than 1 day
 communicationLag = 2
-testLag = 8
+testLag = 3
 symptomToHospitalLag = 5
+hospitalToIcuLag = 5
 
-icuRate = 0.02
-infectionFatalityRateA = 0.01
-infectionFatalityRateB = infectionFatalityRateA * 2  # higher lethality without ICU - by how much?
+infectionFatalityRateA = 0.005  # Diamond Princess, age corrected plus some optimism
+infectionFatalityRateB = infectionFatalityRateA * 3.0  # higher lethality without ICU - by how much?  even higher without oxygen and meds
+icuRate = infectionFatalityRateA * 2  # Imperial College NPI study: hospitalized/ICU/fatal = 6/2/1
 
-r0 = beta0 / gamma  # somehow an r0 of 3.0 seems to low
-r1 = beta1 / gamma
+beta0 = r0 * gamma  # The parameter controlling how often a susceptible-infected contact results in a new infection.
+beta1 = r1 * gamma  # beta0 is used during days0 phase, beta1 after days0
 
-print("r0: %.2f" % r0, "   r1: %.2f" % r1)
+print("beta0: %.3f" % beta0, "   beta1: %.3f" % beta1)
 
-# https://hal.archives-ouvertes.fr/hal-00657584/document page 13
-s1 = 0.5 * (-(sigma + gamma) + math.sqrt((sigma + gamma) ** 2 + 4 * sigma * gamma * (r0 -1)))
+s1 = 0.5 * (-(sigma + gamma) + math.sqrt((sigma + gamma) ** 2 + 4 * sigma * gamma * (r0 -1)))  # https://hal.archives-ouvertes.fr/hal-00657584/document page 13
 print("doubling0 every ~%.1f" % (math.log(2.0, math.e) / s1), "days")
+
 
 def model(Y, x, N, beta0, days0, beta1, gamma, sigma):
     # :param array x: Time step (days)
@@ -72,7 +76,7 @@ def model(Y, x, N, beta0, days0, beta1, gamma, sigma):
 
     S, E, I, R = Y
 
-    beta = beta0 if x <= days0 else beta1
+    beta = beta0 if x < days0 else beta1
 
     dS = - beta * S * I / N
     dE = beta * S * I / N - sigma * E
@@ -80,9 +84,8 @@ def model(Y, x, N, beta0, days0, beta1, gamma, sigma):
     dR = gamma * I
     return dS, dE, dI, dR
 
-
 def solve(model, population, E0, beta0, days0, beta1, gamma, sigma):
-    X = np.arange(days)  # time steps array
+    X = np.arange(daysTotal)  # time steps array
     N0 = population - E0, E0, 0, 0  # S, E, I, R at initial step
 
     y_data_var = scipy.integrate.odeint(model, N0, X, args=(population, beta0, days0, beta1, gamma, sigma))
@@ -92,70 +95,80 @@ def solve(model, population, E0, beta0, days0, beta1, gamma, sigma):
 
 X, S, E, I, R = solve(model, population, E0, beta0, days0, beta1, gamma, sigma)
 
+# derived arrays
 F = I * findRatio
-H = I * icuRate * timeInHospital / timeInfected
+U = I * icuRate * timeInHospital / timeInfected  # scale for short infectious time vs. real time in hospital
 P = I / population * 1000000 # probability of random person to be infected
 
+# timeline: exposed, infectious, symptoms, at home, hospital, ICU
+F = shared.delay(F, timePresymptomatic + symptomToHospitalLag + testLag + communicationLag)  # found in tests and officially announced; from I
+U = shared.delay(U, timePresymptomatic + symptomToHospitalLag + hospitalToIcuLag)  # ICU  from I before delay
+U = shared.delay(U, round((timeInHospital / timeInfected - 1) * timeInfected))  # ??? delay by scaling? todo: think this through
+
 # estimate deaths from recovered
-D = np.arange(days)
+D = np.arange(daysTotal)
 RPrev = 0
 DPrev = 0
 for i, x in enumerate(X):
-    IFR = infectionFatalityRateA if H[i] <= intensiveUnits else infectionFatalityRateB
+    IFR = infectionFatalityRateA if U[i] <= intensiveUnits else infectionFatalityRateB
     D[i] = DPrev + IFR * (R[i] - RPrev)
     RPrev = R[i]
     DPrev = D[i]
 
-# add delays
-F = world_data.delay(F, symptomToHospitalLag + testLag + communicationLag)  # found in tests; from I
-H = world_data.delay(H, symptomToHospitalLag)  # ICU  from I
-D = world_data.delay(D, timeInHospital + communicationLag)  # deaths  from R
-
+D = shared.delay(D, - timeInfected + timePresymptomatic +symptomToHospitalLag + timeInHospital + communicationLag)  # deaths  from R
 
 def print_info(i):
     print("day %d" % i)
     print(" Infected: %d" % I[i], "%.1f" % (I[i] * 100.0 / population))
     print(" Infected found: %d" % F[i], "%.1f" % (F[i] * 100.0 / population))
-    print(" Hospital: %d" % H[i], "%.1f" % (H[i] * 100.0 / population))
+    print(" Hospital: %d" % U[i], "%.1f" % (U[i] * 100.0 / population))
     print(" Recovered: %d" % R[i], "%.1f" % (R[i] * 100.0 / population))
     print(" Deaths: %d" % D[i], "%.1f" % (D[i] * 100.0 / population))
 
 print_info(days0)
-print_info(days - 1)
+print_info(daysTotal - 1)
 
 # Plot
 fig = plt.figure(dpi=75, figsize=(20,16))
 ax = fig.add_subplot(111)
+ax.fmt_xdata = matplotlib.dates.DateFormatter('%Y-%m-%d')  # higher date precision for cursor display
 if logPlot:
     ax.set_yscale("log", nonposy='clip')
 
-#ax.plot(X, S, 'b', alpha=0.5, lw=2, label='Susceptible')
-ax.plot(X, E, 'y', alpha=0.5, lw=2, label='Exposed')
-ax.plot(X, I, 'r--', alpha=0.5, lw=1, label='Infected')
-ax.plot(X, F, color='orange', alpha=0.5, lw=1, label='Found')
-ax.plot(X, H, 'r', alpha=0.5, lw=2, label='ICU')
-#ax.plot(X, R, 'g', alpha=0.5, lw=1, label='Recovered with immunity')
-#ax.plot(X, P, 'c', alpha=0.5, lw=1, label='Probability of infection')
-ax.plot(X, D, 'k', alpha=0.5, lw=1, label='Deaths')
-
-ax.plot([min(X), max(X)], [intensiveUnits, intensiveUnits], 'b-.', alpha=0.5, lw=1, label='Number of ICU available')
-
-
 # actual country data
-XCDR_data = np.array(world_data.get_country_xcdr(COUNTRY, PROVINCE, dateOffset=dataOffset))
+XCDR_data = np.array(world_data.get_country_xcdr(COUNTRY, PROVINCE,
+                                                 excludeCountries=EXCLUDECOUNTRIES, returnDates=True))
+dataOffset = shared.get_offset_X(XCDR_data, D, dataOffset)  # match model day to real data day for deaths curve  todo: percentage wise?
 
 ax.plot(XCDR_data[:,0], XCDR_data[:,1], 'o', color='orange', alpha=0.5, lw=1, label='cases actually detected in tests')
 ax.plot(XCDR_data[:,0], XCDR_data[:,2], 'x', color='black', alpha=0.5, lw=1, label='actually deceased')
 
-#print(XCDR_data[0:30])
+# set model time to real world time
+X = shared.model_to_world_time(X - dataOffset, XCDR_data)
+print("lockdown measures start:", X[days0])
+
+# model data
+#ax.plot(X, S, 'b', alpha=0.5, lw=2, label='Susceptible')
+ax.plot(X, E, 'y', alpha=0.5, lw=2, label='Exposed (realtime)')
+ax.plot(X, I, 'r--', alpha=0.5, lw=1, label='Infected (realtime)')
+ax.plot(X, F, color='orange', alpha=0.5, lw=1, label='Found (lagtime)')
+ax.plot(X, U, 'r', alpha=0.5, lw=2, label='ICU (realtime)')
+#ax.plot(X, R, 'g', alpha=0.5, lw=1, label='Recovered with immunity')
+#ax.plot(X, P, 'c', alpha=0.5, lw=1, label='Probability of infection')
+ax.plot(X, D, 'k', alpha=0.5, lw=1, label='Deaths (lagtime)')
+
+ax.plot([min(X), max(X)], [intensiveUnits, intensiveUnits], 'b-.', alpha=0.5, lw=1, label='Number of ICU available')
 
 ax.set_xlabel('Time /days')
 ax.set_ylabel('Number (1000s)')
 ax.set_ylim(bottom=1.0)
 
 ax.grid(linestyle=':')  #b=True, which='major', c='w', lw=2, ls='-')
-legend = ax.legend(title='COVID-19 SEIR model: ' + COUNTRY + " " + PROVINCE +
-                   ' %dk' % (population / 1000) + ' (beta)')
+if EXCLUDECOUNTRIES:
+    locationString = COUNTRY + "but " + ",".join(EXCLUDECOUNTRIES) + ' %dk' % (population / 1000)
+locationString = COUNTRY + " " + PROVINCE +' %dk' % (population / 1000)
+icuString = "  intensive care units: %.0f" % intensiveUnits + " (guess)"
+legend = ax.legend(title='COVID-19 SEIR model: ' + locationString + ' (beta)\n' + icuString)
 legend.get_frame().set_alpha(0.5)
 for spine in ('top', 'right', 'bottom', 'left'):
     ax.spines[spine].set_visible(False)

@@ -34,7 +34,18 @@ for country in countries:
             if country in country2:
                 cp2[country] = countryPopulation[country2]
 
-def get_population(country):
+def get_population(country, province, excludeCountries=[]):
+    if province != 'all':
+        country = province
+    if country == 'all':
+        p = 7.8E9
+        for e in excludeCountries:
+            p -= get_population(e, 'all')
+        return p
+    if not country in cp2:
+        countries, provinces = world_data.get_countries_provinces()
+        print('\n', countries, '\n\n', provinces)
+        raise Exception('Country / province not found. See above.')
     return cp2[country]
 
 def get_all_population_data():

@@ -11,6 +11,13 @@ if (not os.path.exists(shared.FILENAME) or
     os.path.getmtime(shared.FILENAME) < time.time() - shared.CACHETIMESECONDS):
         fetch_data.fetch()
 
+def dates_to_days(XDates):
+    XDays = []
+    for date in XDates:
+        XDays.append((date - min(XDates)).days)
+    XDays.sort()
+    return XDays
+
 with open(shared.FILENAME) as f:
     s = f.read()
     s = s.replace('Iran (Islamic Republic of)', 'Iran')  # obsolete?

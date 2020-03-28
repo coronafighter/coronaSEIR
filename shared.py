@@ -4,18 +4,22 @@ CACHETIMESECONDS = 3600 * 3  # be nice to the API to not get banned
 APIURL = 'https://coronavirus-tracker-api.herokuapp.com/all'
 FILENAME = 'covid-19_data.json'
 
+import datetime
 import numpy as np
-
 import scipy.ndimage.interpolation  # shift function
+
+import world_data
+
 def delay(npArray, days):
     """shift to right, fill with 0, values fall off!"""
     return scipy.ndimage.interpolation.shift(npArray, days, cval=0)
 
 
 def get_offset_X(XCDR_data, D_model, dataOffset='auto'):
-    X_data = XCDR_data[:,0] - min(XCDR_data[:,0])
+    X_days = world_data.dates_to_days(XCDR_data[:,0])
+    X_days = np.array(X_days) - min(X_days)
     if dataOffset == 'auto':
-        assert (max(X_data) - min(X_data) + 1) == len(X_data)  # continous data
+        assert (max(X_days) - min(X_days) + 1) == len(X_days)  # continous data
         D_data = XCDR_data[:,2]
         mini = 9e9
         miniO = None
@@ -27,6 +31,11 @@ def get_offset_X(XCDR_data, D_model, dataOffset='auto'):
                 mini = rms
                 miniO = o
         print("date offset:", miniO)
-        return X_data + miniO
-    else:
-        return X_data + dataOffset
+        dataOffset = miniO
+    return dataOffset
+
+def model_to_world_time(X, XCDR_data):
+    X2 = np.array(X, dtype=np.dtype('M8[D]'))
+    for i, x in enumerate(X):
+        X2[i] = min(XCDR_data[:,0]) + datetime.timedelta(days=int(x))
+    return X2

@@ -7,7 +7,7 @@ def fetch():
         'User-Agent' : 'https://github.com/coronafighter/coronaSEIR'}))
     r = url.read()
     
-    print("read bytes from %s: %i" % (URL, len(r)))
+    print("read bytes from %s: %i" % (shared.APIURL, len(r)))
     
     if len(r) < 1000:
         raise Exception("fetch_data.py read less than 1000 bytes")
