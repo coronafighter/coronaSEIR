@@ -32,17 +32,17 @@ dataOffset = 'auto'  # position of real world data relative to model in whole da
 
 days0 = 63  # Germany:57  days before lockdown measures - you might need to adjust this according to output "lockdown measures start:"
 
-r0 = 2.5 # Germany: 3.5 world: https://en.wikipedia.org/wiki/Basic_reproduction_number
-r1 = 1.0  # reproduction number after quarantine measures  -  needs source
+r0 = 3.0  # https://en.wikipedia.org/wiki/Basic_reproduction_number
+r1 = 1.0  # reproduction number after quarantine measures - https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3539694
+          # it seems likely that measures will become more restrictive if r1 is not small enough
 
 timePresymptomatic = 2.5  # almost half infections take place before symptom onset (Drosten) https://www.medrxiv.org/content/10.1101/2020.03.08.20032946v1.full.pdf  
 
-# I in this model is maybe better described as 'infectious'?
+# I in this model is maybe better described as 'Infectors'? Event infectious persons in quarantine do not count.
 sigma = 1.0 / (5.2 - timePresymptomatic)  # The rate at which an exposed person becomes infectious.  symptom onset - presympomatic
-# for SEIR: generationTime = 1/sigma + 1/gamma = timeFromInfectionToInfectiousness + timeInfectious  https://hal.archives-ouvertes.fr/hal-00657584/document page 13
+# for SEIR: generationTime = 1/sigma + 0.5 * 1/gamma = timeFromInfectionToInfectiousness + timeInfectious  https://en.wikipedia.org/wiki/Serial_interval
 generationTime = 4.6  # https://www.medrxiv.org/content/10.1101/2020.03.05.20031815v1  http://www.cidrap.umn.edu/news-perspective/2020/03/short-time-between-serial-covid-19-cases-may-hinder-containment
-gamma = 1.0 / (generationTime - 1.0/sigma)  # The rate an infectious is not recovers and moves into the resistant phase. Note that for the model it only means he does not infect anybody any more. Why so low?
-print("sigma: %.3f  1/sigma: %.3f    gamma: %.3f  1/gamma: %.3f" % (sigma, 1.0/sigma, gamma, 1.0/gamma))
+gamma = 1.0 / (2.0 * (generationTime - 1.0 / sigma))  # The rate an infectious is not recovers and moves into the resistant phase. Note that for the model it only means he does not infect anybody any more.
 
 noSymptoms = 0.35  # https://www.zmescience.com/medicine/iceland-testing-covid-19-0523/  but virus can already be found in throat 2.5 days before symptoms (Drosten)
 findRatio = (1 - noSymptoms) / 2  # wild guess! italy:16? germany:2 a lot of the mild cases will go undetected  assuming 100% correct tests
@@ -64,10 +64,8 @@ icuRate = infectionFatalityRateA * 2  # Imperial College NPI study: hospitalized
 beta0 = r0 * gamma  # The parameter controlling how often a susceptible-infected contact results in a new infection.
 beta1 = r1 * gamma  # beta0 is used during days0 phase, beta1 after days0
 
-print("beta0: %.3f" % beta0, "   beta1: %.3f" % beta1)
-
 s1 = 0.5 * (-(sigma + gamma) + math.sqrt((sigma + gamma) ** 2 + 4 * sigma * gamma * (r0 -1)))  # https://hal.archives-ouvertes.fr/hal-00657584/document page 13
-print("doubling0 every ~%.1f" % (math.log(2.0, math.e) / s1), "days")
+doublingTime = (math.log(2.0, math.e) / s1)
 
 
 def model(Y, x, N, beta0, days0, beta1, gamma, sigma):
@@ -120,17 +118,6 @@ for i, x in enumerate(X):
 
 D = shared.delay(D, - timeInfected + timePresymptomatic +symptomToHospitalLag + timeInHospital + communicationLag)  # deaths  from R
 
-def print_info(i):
-    print("day %d" % i)
-    print(" Infected: %d" % I[i], "%.1f" % (I[i] * 100.0 / population))
-    print(" Infected found: %d" % F[i], "%.1f" % (F[i] * 100.0 / population))
-    print(" Hospital: %d" % U[i], "%.1f" % (U[i] * 100.0 / population))
-    print(" Recovered: %d" % R[i], "%.1f" % (R[i] * 100.0 / population))
-    print(" Deaths: %d" % D[i], "%.1f" % (D[i] * 100.0 / population))
-
-print_info(days0)
-print_info(daysTotal - 1)
-
 # Plot
 fig = plt.figure(dpi=75, figsize=(20,16))
 ax = fig.add_subplot(111)
@@ -148,7 +135,6 @@ ax.plot(XCDR_data[:,0], XCDR_data[:,2], 'x', color='black', alpha=0.5, lw=1, lab
 
 # set model time to real world time
 X = shared.model_to_world_time(X - dataOffset, XCDR_data)
-print("lockdown measures start:", X[days0])
 
 # model data
 #ax.plot(X, S, 'b', alpha=0.5, lw=2, label='Susceptible')
@@ -176,5 +162,23 @@ legend.get_frame().set_alpha(0.5)
 for spine in ('top', 'right', 'bottom', 'left'):
     ax.spines[spine].set_visible(False)
 cursor = matplotlib.widgets.Cursor(ax, color='black', linewidth=1 )
+
+# text output
+print("sigma: %.3f  1/sigma: %.3f    gamma: %.3f  1/gamma: %.3f" % (sigma, 1.0/sigma, gamma, 1.0/gamma))
+print("beta0: %.3f" % beta0, "   beta1: %.3f" % beta1)
+
+def print_info(i):
+    print("day %d" % i)
+    print(" Infected: %d" % I[i], "%.1f" % (I[i] * 100.0 / population))
+    print(" Infected found: %d" % F[i], "%.1f" % (F[i] * 100.0 / population))
+    print(" Hospital: %d" % U[i], "%.1f" % (U[i] * 100.0 / population))
+    print(" Recovered: %d" % R[i], "%.1f" % (R[i] * 100.0 / population))
+    print(" Deaths: %d" % D[i], "%.1f" % (D[i] * 100.0 / population))
+
+print_info(days0)
+print_info(daysTotal - 1)
+print("doubling0 every ~%.1f" % doublingTime, "days")
+print("lockdown measures start:", X[days0])
+
 plt.show()
 #plt.savefig('model_run.png')

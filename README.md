@@ -91,7 +91,8 @@ https://www.reddit.com/r/Coronavirus/comments/f8k2nj/why_sarscov2_is_not_just_th
 gamma: Generation time (serial interval): https://www.medrxiv.org/content/10.1101/2020.03.05.20031815v1  
 also: http://www.cidrap.umn.edu/news-perspective/2020/03/short-time-between-serial-covid-19-cases-may-hinder-containment  
 Relationship hospitalized/ICU/death https://www.imperial.ac.uk/media/imperial-college/medicine/sph/ide/gida-fellowships/Imperial-College-COVID19-NPI-modelling-16-03-2020.pdf  
-r0 ~ 3 https://www.newscientist.com/article/2238578-uk-has-enough-intensive-care-units-for-coronavirus-expert-predicts/  
+r0 ~ 3.0 https://www.newscientist.com/article/2238578-uk-has-enough-intensive-care-units-for-coronavirus-expert-predicts/  
+r1 (thanks paus-5!) https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3539694
 sigma: Infection occurs before symptoms (Drosten): https://www.medrxiv.org/content/10.1101/2020.03.08.20032946v1.full.pdf  
 Number of asymptomatics: https://www.zmescience.com/medicine/iceland-testing-covid-19-0523/  
 some more in the source code
