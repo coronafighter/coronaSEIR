@@ -26,7 +26,7 @@ def get_offset_X(XCDR_data, D_model, dataOffset='auto'):
         for o in range(0,150):  # todo: dat number...
             oDd = np.pad(D_data, (o, 0))  # different than delay/shift, extends length
             oDm = D_model[:len(D_data) + o]
-            rms = np.sqrt(np.mean(np.square(oDd - oDm)))
+            rms = np.sqrt(np.mean(np.square((oDd - oDm))/(1 + oDm)))  # hacky but seems to do the job
             if rms < mini:
                 mini = rms
                 miniO = o

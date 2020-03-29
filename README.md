@@ -59,6 +59,8 @@ Note: Make sure you got correct number for population and available ICU units fo
 ## ToDo
 * idea: compare optimal fit doubling time for all countries
 * idea: compare death rate by testing capacity --> extrapolate fit curve to find real death rate
+* idea: calculate for all countries to compare how badly hit (days0 needs to be set manually)
+* add data about lockdown starting times, also make it possible to enter as a date
 * make R0 and days0 lists to be able to have more than two phases
 * add data about intensive care units
 * ventilator patients separately?

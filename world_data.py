@@ -22,6 +22,7 @@ with open(shared.FILENAME) as f:
     s = f.read()
     s = s.replace('Iran (Islamic Republic of)', 'Iran')  # obsolete?
     s = s.replace('Mainland China', 'China')  # obsolete ?
+    s = s.replace('Korea, South', 'South Korea')
     print("read data: %i bytes" % len(s))
 d = json.loads(s)
 

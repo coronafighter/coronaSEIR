@@ -9,7 +9,7 @@ import shared
 import world_data
 import population
 
-COUNTRY = 'Germany'  # e.g. 'all' 'South Korea' 'France'  'Republic of Korea' 'Italy' 'Germany' 
+COUNTRY = 'Germany'  # e.g. 'all' South Korea' 'France'  'Republic of Korea' 'Italy' 'Germany'  'US' 'Spain'
 PROVINCE = 'all'  # 'all' 'Hubei'  # for provinces other than Hubei the population value needs to be set manually
 EXCLUDECOUNTRIES = ['China'] if COUNTRY == 'all' else []  # massive measures early on
 
@@ -20,7 +20,7 @@ population = population.get_population(COUNTRY, PROVINCE, EXCLUDECOUNTRIES)
 if COUNTRY == 'Germany':
     intensiveUnits = 28000 / 1.5 / 2  # ICU units available  # Germany: 28000  # note that infections might show up in local clusters making things worse
 else:
-    intensiveUnits = population * 1.0 / 1000  # rough guess
+    intensiveUnits = population * 1.0 / 10000  # rough guess for industrialized country
 
 #intensiveUnits = ...  # your country
 
@@ -30,7 +30,7 @@ E0 = 1  # exposed at initial time step
 daysTotal = 365  # total days to model
 dataOffset = 'auto'  # position of real world data relative to model in whole days. 'auto' will choose optimal offset based on matching of deaths curves
 
-days0 = 63  # Germany:57  days before lockdown measures - you might need to adjust this according to output "lockdown measures start:"
+days0 = 60  # Germany:60 France: Italy:65? Spain:71? 'all'butChina:68? days before lockdown measures - you might need to adjust this according to output "lockdown measures start:"
 
 r0 = 3.0  # https://en.wikipedia.org/wiki/Basic_reproduction_number
 r1 = 1.0  # reproduction number after quarantine measures - https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3539694
@@ -45,7 +45,7 @@ generationTime = 4.6  # https://www.medrxiv.org/content/10.1101/2020.03.05.20031
 gamma = 1.0 / (2.0 * (generationTime - 1.0 / sigma))  # The rate an infectious is not recovers and moves into the resistant phase. Note that for the model it only means he does not infect anybody any more.
 
 noSymptoms = 0.35  # https://www.zmescience.com/medicine/iceland-testing-covid-19-0523/  but virus can already be found in throat 2.5 days before symptoms (Drosten)
-findRatio = (1 - noSymptoms) / 2  # wild guess! italy:16? germany:2 a lot of the mild cases will go undetected  assuming 100% correct tests
+findRatio = (1.0 - noSymptoms) / 2.0  # wild guess! italy:8? germany:2 south korea < 1???  a lot of the mild cases will go undetected  assuming 100% correct tests
 
 timeInHospital = 12
 timeInfected = 1.0 / gamma  # better timeInfectious?
