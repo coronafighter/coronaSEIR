@@ -180,5 +180,7 @@ print_info(daysTotal - 1)
 print("doubling0 every ~%.1f" % doublingTime, "days")
 print("lockdown measures start:", X[days0])
 
-plt.show()
-#plt.savefig('model_run.png')
+if 1:
+    plt.show()
+else:
+    plt.savefig('model_run.png')
