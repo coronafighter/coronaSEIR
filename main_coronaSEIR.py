@@ -149,7 +149,6 @@ ax.plot(X, D, 'k', alpha=0.5, lw=1, label='Deaths (lagtime)')
 ax.plot([min(X), max(X)], [intensiveUnits, intensiveUnits], 'b-.', alpha=0.5, lw=1, label='Number of ICU available')
 
 ax.set_xlabel('Time /days')
-ax.set_ylabel('Number (1000s)')
 ax.set_ylim(bottom=1.0)
 
 ax.grid(linestyle=':')  #b=True, which='major', c='w', lw=2, ls='-')
