@@ -34,7 +34,7 @@ for country in countries:
             if country in country2:
                 cp2[country] = countryPopulation[country2]
 
-def get_population(country, province, excludeCountries=[]):
+def get_population(country, province='all', excludeCountries=[]):
     if province != 'all':
         country = province
     if country == 'all':
