@@ -30,7 +30,7 @@ E0 = 1  # exposed at initial time step
 daysTotal = 365  # total days to model
 dataOffset = 'auto'  # position of real world data relative to model in whole days. 'auto' will choose optimal offset based on matching of deaths curves
 
-days0 = 60  # Germany:60 France: Italy:65? Spain:71? 'all'butChina:68? days before lockdown measures - you might need to adjust this according to output "lockdown measures start:"
+days0 = 57  # Germany:57 France: Italy:62? Spain:68? 'all'butChina:65? days before lockdown measures - you might need to adjust this according to output "lockdown measures start:"
 
 r0 = 3.0  # https://en.wikipedia.org/wiki/Basic_reproduction_number
 r1 = 1.0  # reproduction number after quarantine measures - https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3539694
@@ -45,7 +45,7 @@ generationTime = 4.6  # https://www.medrxiv.org/content/10.1101/2020.03.05.20031
 gamma = 1.0 / (2.0 * (generationTime - 1.0 / sigma))  # The rate an infectious is not recovers and moves into the resistant phase. Note that for the model it only means he does not infect anybody any more.
 
 noSymptoms = 0.35  # https://www.zmescience.com/medicine/iceland-testing-covid-19-0523/  but virus can already be found in throat 2.5 days before symptoms (Drosten)
-findRatio = (1.0 - noSymptoms) / 2.0  # wild guess! italy:8? germany:2 south korea < 1???  a lot of the mild cases will go undetected  assuming 100% correct tests
+findRatio = (1.0 - noSymptoms) / 4.0  # wild guess! italy:16? germany:4 south korea: 4?  a lot of the mild cases will go undetected  assuming 100% correct tests
 
 timeInHospital = 12
 timeInfected = 1.0 / gamma  # better timeInfectious?
@@ -57,7 +57,7 @@ testLag = 3
 symptomToHospitalLag = 5
 hospitalToIcuLag = 5
 
-infectionFatalityRateA = 0.005  # Diamond Princess, age corrected plus some optimism
+infectionFatalityRateA = 0.01  # Diamond Princess, age corrected
 infectionFatalityRateB = infectionFatalityRateA * 3.0  # higher lethality without ICU - by how much?  even higher without oxygen and meds
 icuRate = infectionFatalityRateA * 2  # Imperial College NPI study: hospitalized/ICU/fatal = 6/2/1
 
@@ -106,6 +106,9 @@ F = shared.delay(F, timePresymptomatic + symptomToHospitalLag + testLag + commun
 U = shared.delay(U, timePresymptomatic + symptomToHospitalLag + hospitalToIcuLag)  # ICU  from I before delay
 U = shared.delay(U, round((timeInHospital / timeInfected - 1) * timeInfected))  # ??? delay by scaling? todo: think this through
 
+# cumulate found --> cases
+FC = np.cumsum(F)
+
 # estimate deaths from recovered
 D = np.arange(daysTotal)
 RPrev = 0
@@ -140,7 +143,7 @@ X = shared.model_to_world_time(X - dataOffset, XCDR_data)
 #ax.plot(X, S, 'b', alpha=0.5, lw=2, label='Susceptible')
 ax.plot(X, E, 'y', alpha=0.5, lw=2, label='Exposed (realtime)')
 ax.plot(X, I, 'r--', alpha=0.5, lw=1, label='Infected (realtime)')
-ax.plot(X, F, color='orange', alpha=0.5, lw=1, label='Found (lagtime)')
+ax.plot(X, FC, color='orange', alpha=0.5, lw=1, label='Found cumulated: "cases" (lagtime)')
 ax.plot(X, U, 'r', alpha=0.5, lw=2, label='ICU (realtime)')
 #ax.plot(X, R, 'g', alpha=0.5, lw=1, label='Recovered with immunity')
 #ax.plot(X, P, 'c', alpha=0.5, lw=1, label='Probability of infection')
@@ -170,12 +173,14 @@ def print_info(i):
     print("day %d" % i)
     print(" Infected: %d" % I[i], "%.1f" % (I[i] * 100.0 / population))
     print(" Infected found: %d" % F[i], "%.1f" % (F[i] * 100.0 / population))
+    print(" Infected found cumulated ('cases'): %d" % FC[i], "%.1f" % (FC[i] * 100.0 / population))
     print(" Hospital: %d" % U[i], "%.1f" % (U[i] * 100.0 / population))
     print(" Recovered: %d" % R[i], "%.1f" % (R[i] * 100.0 / population))
     print(" Deaths: %d" % D[i], "%.1f" % (D[i] * 100.0 / population))
 
 print_info(days0)
 print_info(daysTotal - 1)
+print("findratio: %.1f%%" % (findRatio * 100.0))
 print("doubling0 every ~%.1f" % doublingTime, "days")
 print("lockdown measures start:", X[days0])
 
