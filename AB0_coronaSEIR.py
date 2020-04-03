@@ -152,7 +152,7 @@ cursor = matplotlib.widgets.Cursor(ax, color='black', linewidth=1 )
 
 print('empirical relative BT distribution hospital: 1.21, 1.09, 1.48, 0.67 from paper ("overall")')
 
-if 1:
+if 0:
     plt.show()
 else:
-    plt.savefig('model_run.png')
+    plt.savefig('AB0.png')

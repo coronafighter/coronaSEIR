@@ -104,6 +104,7 @@ some more in the source code
 ![model run](https://github.com/coronafighter/coronaSEIR/blob/master/screenshots/model_run.png)
 ![model run](https://github.com/coronafighter/coronaSEIR/blob/master/screenshots/model_run2.png)
 ![data](https://github.com/coronafighter/coronaSEIR/blob/master/screenshots/data.png)
+![data](https://github.com/coronafighter/coronaSEIR/blob/master/screenshots/AB0.png)
 
 ## License
 MIT license
