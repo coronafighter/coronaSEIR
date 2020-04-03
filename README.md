@@ -71,6 +71,13 @@ Note: Make sure you got correct number for population and available ICU units fo
 * X add proper list of populations
 * X use real dates instead of days?
 
+## Contribute
+Please note that I would prefer to stick to the code style of camelCase variables and snake_case function/method names to better distinguish the two. I am aware of PEP8.  
+  
+I would like to keep the monolithic main file with interactive parameters, model function and output all in one. Code is kept rather simple on purpose to allow for good readability even for beginners (I know, some parts are still very ugly).  
+  
+Let me know if you would like me to add your project or fork to this readme.
+
 ## Credits
 Based on:  
 https://github.com/ckaus/EpiPy  
