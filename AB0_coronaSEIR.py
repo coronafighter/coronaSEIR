@@ -25,9 +25,11 @@ tCMatch = np.array([
     [1, 1, 1, 1],
     [0, 0, 0, 1],], dtype='float64')
 
+#tCMatch[2,0] = 0.9  # in reality there are two A subtypes A1 and A2 which in particular might make AB do a bit better
+
 tCDiff = 1 - tCMatch
 
-bloodTypes = ['A', 'B', 'AB', '0']  # in reality there are two A subtypes A1 and A2 which in particular might make AB do a bit better
+bloodTypes = ['A', 'B', 'AB', '0']
 BT = np.array([0.32, 0.25, 0.09, 0.34])
 #BT = np.array([0.25, 0.25, 0.25, 0.25])
 assert(sum(BT) == 1.0)
@@ -41,11 +43,10 @@ R0 = np.array([0, 0, 0, 0])
 population = 100000
 S0 = BT * population
 
-
 #E0 = 1  # exposed at initial time step
 daysTotal = 130  # total days to model
 dataOffset = 'auto'  # position of real world data relative to model in whole days. 'auto' will choose optimal offset based on matching of deaths curves
-days0 = 129  # Germany:60 France: Italy:65? Spain:71? 'all'butChina:68? days before lockdown measures - you might need to adjust this according to output "lockdown measures start:"
+days0 = 129
 
 r0 = 3.0  # https://en.wikipedia.org/wiki/Basic_reproduction_number
 r1 = 1.0  # reproduction number after quarantine measures - https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3539694
@@ -97,34 +98,56 @@ def solve(model, population, E0, beta0, days0, beta1, gamma, sigma, tCs):
     
     return X, S, E, I, R  # note these are all arrays
 
+
 # Plot and print
 fig = plt.figure(dpi=75, figsize=(20,16))
-ax = fig.add_subplot(111)
+ax = fig.add_subplot(211)
+
 print('transm. coef.     peak   @   day      relative blood type distribution @ peak-day/2')
 for c in [1.0, 0.75, 0.5, 0.25, 0.125]:
     tCr = tCMatch + c * tCDiff
-    #tCn = tCr
-    
     tCn = scale_tC(tCr)
     
     X, S, E, I, R = solve(model, population, E0, beta0, days0, beta1,
                               gamma, sigma, tCn)
-    IallBt = np.sum(I, axis=0)
-    ax.plot(X, IallBt, alpha=0.6, lw=3, label='Infected, transmission coefficient: %.1f' % c)
+
+    ax.plot(X, np.sum(I, axis=0), alpha=0.6, lw=3, label='Infected, transmission coefficient: %.1f' % c)
     
-    if c in [1.0, 0.125]:
-        for i, col in ((3, 'purple'), (1, 'red'), (2, 'blue'), (0, 'orange')):
-            ax.plot(X, I[i], color=col, alpha=0.5, lw=1,
-                    label='Infected, t.c.: %.1f b.t.: %s' % (c, bloodTypes[i]))
-    
+    if c in [0.125]:  # , 1.0]:
+         for i, col in ((3, 'purple'), (1, 'red'), (2, 'blue'), (0, 'orange')):
+             ax.plot(X, I[i], color=col, alpha=0.5, lw=1,
+                     label='Infected, t.c.: %.1f b.t.: %s' % (c, bloodTypes[i]))
+
     i = np.argmax(np.sum(I, axis=0))  # peak day, fixed day gives similar results
     print("%6.4f         %8d    %4d      " % (c, np.sum(I[:, i]), i), I[:, int(i/2)] / np.sum(I[:, int(i/2)]) / BT)
 
-
-ax.set_xlabel('Time /days')
 ax.grid(linestyle=':')
-legend = ax.legend(title='COVID-19 SEIR model - blood types (beta)')
-legend.get_frame().set_alpha(0.5)
+ax.set_xlabel('Time /days')
+legend = ax.legend(title='COVID-19 SEIR model - blood types distribution (beta)')
+
+
+ax = fig.add_subplot(212)
+
+C = np.arange(0.1, 1.01, 0.01)
+BD = []
+for c in C:
+    tCr = tCMatch + c * tCDiff
+    tCn = scale_tC(tCr)
+
+    X, S, E, I, R = solve(model, population, E0, beta0, days0, beta1,
+                              gamma, sigma, tCn)
+
+    BD.append(I[:, int(i/2)] / np.sum(I[:, int(i/2)]) / BT)
+
+BD = np.array(BD)
+for i, bd in enumerate(BD.T):
+    ax.plot(C, bd, alpha=0.5, label="blood type: " + bloodTypes[i])
+
+ax.grid(linestyle=':')
+legend = ax.legend(title='COVID-19 SEIR model (beta)\nrelative blood types distribution over transmission coefficient')
+ax.set_xlabel('Transmission coefficient')
+ax.set_xlim(1.0, 0.0)
+
 cursor = matplotlib.widgets.Cursor(ax, color='black', linewidth=1 )
 
 print('empirical relative BT distribution hospital: 1.21, 1.09, 1.48, 0.67 from paper ("overall")')
