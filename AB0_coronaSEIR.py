@@ -2,8 +2,6 @@
 # Relationship between the ABO Blood Group and the COVID-19 Susceptibility https://www.medrxiv.org/content/10.1101/2020.03.11.20031096v1
 # Inhibition of the interaction between the SARS-CoV spike protein and its cellular receptor by anti-histo-blood group antibodies. https://www.ncbi.nlm.nih.gov/pubmed/18818423
 
-# todo: order blood types as in paper
-
 import math
 import numpy as np
 np.set_printoptions(precision=3)
@@ -15,24 +13,26 @@ import matplotlib.dates
 def scale_tC(C):  # naive - adhere to blood type distribution?
     return C/ np.mean(C)   # correct? little influence on BT distribution
 
-# ['S0I0', 'S0IA', 'S0IB', 'S0IC'],  # C = AB; I0 infects S0, IA --> S0, IB --> S0, IAB --> S0
-# ['SAI0', 'SAIA', 'SAIB', 'SAIC'],  # I0 --> SA, IA --> SA, ...
-# ['SBI0', 'SBIA', 'SBIB', 'SBIC'],
-# ['SCI0', 'SCIA', 'SCIB', 'SCIC']
+
+# ['SAIA', 'SAIB', 'SAIC', 'SAI0'],  # C = AB; IA --> SA, IB --> SA, IAB --> SA ...
+# ['SBIA', 'SBIB', 'SBIC', 'SBI0'],
+# ['SCIA', 'SCIB', 'SCIC', 'SCI0'],
+# ['S0IA', 'S0IB', 'S0IC', 'S0I0'],
 
 tCMatch = np.array([
-    [1, 0, 0, 0],
-    [1, 1, 0, 0],
-    [1, 0, 1, 0],
-    [1, 1, 1, 1],], dtype='float64')
+    [1, 0, 0, 1],
+    [0, 1, 0, 1],
+    [1, 1, 1, 1],
+    [0, 0, 0, 1],], dtype='float64')
 
 tCDiff = 1 - tCMatch
 
-bloodTypes = ['0', 'A', 'B', 'AB']  # in reality there are two A subtypes A1 and A2 which in particular might make AB do a bit better
-BT = np.array([0.34, 0.32, 0.25, 0.09])
+bloodTypes = ['A', 'B', 'AB', '0']  # in reality there are two A subtypes A1 and A2 which in particular might make AB do a bit better
+BT = np.array([0.32, 0.25, 0.09, 0.34])
 #BT = np.array([0.25, 0.25, 0.25, 0.25])
 assert(sum(BT) == 1.0)
-print('population BT distribution:', BT, ' 0 A B AB from paper (Wuhan, similar to other areas)')
+print('blood types order:', bloodTypes)
+print('population BT distr.:', BT, 'from paper (Wuhan, similar to "other areas")')
 
 E0 = np.copy(BT)  #np.array([0.25, 0.25, 0.25, 0.25])  # little influence
 I0 = np.array([0, 0, 0, 0])
@@ -97,9 +97,10 @@ def solve(model, population, E0, beta0, days0, beta1, gamma, sigma, tCs):
     
     return X, S, E, I, R  # note these are all arrays
 
-# Plot
+# Plot and print
 fig = plt.figure(dpi=75, figsize=(20,16))
 ax = fig.add_subplot(111)
+print('transm. coef.     peak   @   day      relative blood type distribution @ peak-day/2')
 for c in [1.0, 0.75, 0.5, 0.25, 0.125]:
     tCr = tCMatch + c * tCDiff
     #tCn = tCr
@@ -117,7 +118,7 @@ for c in [1.0, 0.75, 0.5, 0.25, 0.125]:
                     label='Infected, t.c.: %.1f b.t.: %s' % (c, bloodTypes[i]))
     
     i = np.argmax(np.sum(I, axis=0))  # peak day, fixed day gives similar results
-    print("c:%6.4f %8d     day:%4d    BT dist.:" % (c, np.sum(I[:, i]), i), I[:, int(i/2)] / np.sum(I[:, int(i/2)]) / BT)
+    print("%6.4f         %8d    %4d      " % (c, np.sum(I[:, i]), i), I[:, int(i/2)] / np.sum(I[:, int(i/2)]) / BT)
 
 
 ax.set_xlabel('Time /days')
@@ -126,7 +127,7 @@ legend = ax.legend(title='COVID-19 SEIR model - blood types (beta)')
 legend.get_frame().set_alpha(0.5)
 cursor = matplotlib.widgets.Cursor(ax, color='black', linewidth=1 )
 
-print('empirical BT distribution hospital: 0.67, 1.21, 1.09, 1.48  0 A B AB from paper (overall)')
+print('empirical relative BT distribution hospital: 1.21, 1.09, 1.48, 0.67 from paper ("overall")')
 
 if 1:
     plt.show()
