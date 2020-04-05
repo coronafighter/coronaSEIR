@@ -2,6 +2,17 @@
 # Relationship between the ABO Blood Group and the COVID-19 Susceptibility https://www.medrxiv.org/content/10.1101/2020.03.11.20031096v1
 # Inhibition of the interaction between the SARS-CoV spike protein and its cellular receptor by anti-histo-blood group antibodies. https://www.ncbi.nlm.nih.gov/pubmed/18818423
 
+# output
+# blood types order: ['A', 'B', 'AB', '0']
+# population BT distr.: [0.32 0.25 0.09 0.34] from paper (Wuhan, similar to "other areas")
+# transm. coef.     peak   @   day      relative blood type distribution @ peak-day/2
+# 1.0000            17174      55       [1. 1. 1. 1.]
+# 0.7500            17073      55       [1.028 1.006 1.127 0.935]
+# 0.5000            16615      56       [1.069 1.01  1.311 0.845]
+# 0.2500            15223      60       [1.143 1.003 1.625 0.698]
+# 0.1250            13453      65       [1.221 0.977 1.919 0.566]
+# empirical relative BT distribution hospital: 1.21, 1.09, 1.48, 0.67 from paper ("overall")
+
 import math
 import numpy as np
 np.set_printoptions(precision=3)
