@@ -57,8 +57,7 @@ No GUI, you need to alter the script and run again to experiment.
 Note: Make sure you got correct number for population and available ICU units for your country.
   
 ## ToDo
-* idea: compare optimal fit doubling time for all countries
-* idea: compare death rate by testing capacity --> extrapolate fit curve to find real death rate
+* idea: compare optimal fit doubling time for all countries (and against countries blood type distribution)
 * idea: calculate for all countries to compare how badly hit (days0 needs to be set manually)
 * add data about lockdown starting times, also make it possible to enter as a date
 * make R0 and days0 lists to be able to have more than two phases
@@ -96,12 +95,12 @@ https://www.reddit.com/r/COVID19/comments/fbdzc1/coronavirus_epidemiology_metaan
 https://www.reddit.com/r/COVID19/comments/fbxk43/update_open_source_simple_coronavirus_modeling/  
 timeline https://www.reddit.com/r/COVID19/comments/fd6lmg/infectionfatalityratio_ifr_of_covid19_is/  
 https://www.reddit.com/r/COVID19/comments/ffzqzl/estimating_the_asymptomatic_proportion_of_2019/  
-https://www.reddit.com/r/Coronavirus/comments/f8k2nj/why_sarscov2_is_not_just_the_flu_with_sources/ 
+https://www.reddit.com/r/Coronavirus/comments/f8k2nj/why_sarscov2_is_not_just_the_flu_with_sources/  
 gamma: Generation time (serial interval): https://www.medrxiv.org/content/10.1101/2020.03.05.20031815v1  
 also: http://www.cidrap.umn.edu/news-perspective/2020/03/short-time-between-serial-covid-19-cases-may-hinder-containment  
 Relationship hospitalized/ICU/death https://www.imperial.ac.uk/media/imperial-college/medicine/sph/ide/gida-fellowships/Imperial-College-COVID19-NPI-modelling-16-03-2020.pdf  
 r0 ~ 3.0 https://www.newscientist.com/article/2238578-uk-has-enough-intensive-care-units-for-coronavirus-expert-predicts/  
-r1 (thanks paus-5!) https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3539694
+r1 (thanks paus-5!) https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3539694  
 sigma: Infection occurs before symptoms (Drosten): https://www.medrxiv.org/content/10.1101/2020.03.08.20032946v1.full.pdf  
 Number of asymptomatics: https://www.zmescience.com/medicine/iceland-testing-covid-19-0523/  
 Model with AB0 blood type classes: https://www.researchgate.net/figure/An-example-of-a-two-class-age-structured-SIR-model-with-parameters-for-a-typical-human_fig3_259825206  

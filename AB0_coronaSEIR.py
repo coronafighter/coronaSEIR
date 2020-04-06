@@ -24,6 +24,11 @@ import matplotlib.dates
 def scale_tC(C):  # naive - adhere to blood type distribution?
     return C/ np.mean(C)   # correct? little influence on BT distribution
 
+def scaled_tC(c):
+    tCr = tCMatch + c * tCDiff
+    tCs = scale_tC(tCr)
+    return tCs
+
 
 # ['SAIA', 'SAIB', 'SAIC', 'SAI0'],  # C = AB; IA --> SA, IB --> SA, IAB --> SA ...
 # ['SBIA', 'SBIB', 'SBIC', 'SBI0'],
@@ -110,60 +115,59 @@ def solve(model, population, E0, beta0, days0, beta1, gamma, sigma, tCs):
     return X, S, E, I, R  # note these are all arrays
 
 
-# Plot and print
-fig = plt.figure(dpi=75, figsize=(20,16))
-ax = fig.add_subplot(211)
-
-print('transm. coef.     peak   @   day      relative blood type distribution @ peak-day/2')
-for c in [1.0, 0.75, 0.5, 0.25, 0.125]:
-    tCr = tCMatch + c * tCDiff
-    tCn = scale_tC(tCr)
+if __name__ == '__main__':  # do not run the stuff below if this file is imported in other files
+    # Plot and print
+    fig = plt.figure(dpi=75, figsize=(20,16))
+    ax = fig.add_subplot(211)
     
-    X, S, E, I, R = solve(model, population, E0, beta0, days0, beta1,
-                              gamma, sigma, tCn)
-
-    ax.plot(X, np.sum(I, axis=0), alpha=0.6, lw=3, label='Infected, transmission coefficient: %.1f' % c)
+    print('transm. coef.     peak   @   day      relative blood type distribution @ peak-day/2')
+    for c in [1.0, 0.75, 0.5, 0.25, 0.125]:
+        tCs = scaled_tC(c)
+        
+        X, S, E, I, R = solve(model, population, E0, beta0, days0, beta1,
+                                  gamma, sigma, tCs)
     
-    if c in [0.125]:  # , 1.0]:
-         for i, col in ((3, 'purple'), (1, 'red'), (2, 'blue'), (0, 'orange')):
-             ax.plot(X, I[i], color=col, alpha=0.5, lw=1,
-                     label='Infected, t.c.: %.1f b.t.: %s' % (c, bloodTypes[i]))
-
-    i = np.argmax(np.sum(I, axis=0))  # peak day, fixed day gives similar results
-    print("%6.4f         %8d    %4d      " % (c, np.sum(I[:, i]), i), I[:, int(i/2)] / np.sum(I[:, int(i/2)]) / BT)
-
-ax.grid(linestyle=':')
-ax.set_xlabel('Time /days')
-legend = ax.legend(title='COVID-19 SEIR model - blood types distribution (beta)')
-
-
-ax = fig.add_subplot(212)
-
-C = np.arange(0.1, 1.01, 0.01)
-BD = []
-for c in C:
-    tCr = tCMatch + c * tCDiff
-    tCn = scale_tC(tCr)
-
-    X, S, E, I, R = solve(model, population, E0, beta0, days0, beta1,
-                              gamma, sigma, tCn)
-
-    BD.append(I[:, int(i/2)] / np.sum(I[:, int(i/2)]) / BT)
-
-BD = np.array(BD)
-for i, bd in enumerate(BD.T):
-    ax.plot(C, bd, alpha=0.5, label="blood type: " + bloodTypes[i])
-
-ax.grid(linestyle=':')
-legend = ax.legend(title='COVID-19 SEIR model (beta)\nrelative blood types distribution over transmission coefficient')
-ax.set_xlabel('Transmission coefficient')
-ax.set_xlim(1.0, 0.0)
-
-cursor = matplotlib.widgets.Cursor(ax, color='black', linewidth=1 )
-
-print('empirical relative BT distribution hospital: 1.21, 1.09, 1.48, 0.67 from paper ("overall")')
-
-if 1:
-    plt.show()
-else:
-    plt.savefig('AB0.png')
+        ax.plot(X, np.sum(I, axis=0), alpha=0.6, lw=3, label='Infected, transmission coefficient: %.1f' % c)
+        
+        if c in [0.125]:  # , 1.0]:
+             for i, col in ((3, 'purple'), (1, 'red'), (2, 'blue'), (0, 'orange')):
+                 ax.plot(X, I[i], color=col, alpha=0.5, lw=1,
+                         label='Infected, t.c.: %.1f b.t.: %s' % (c, bloodTypes[i]))
+    
+        i = np.argmax(np.sum(I, axis=0))  # peak day, fixed day gives similar results
+        print("%6.4f         %8d    %4d      " % (c, np.sum(I[:, i]), i), I[:, int(i/2)] / np.sum(I[:, int(i/2)]) / BT)
+    
+    ax.grid(linestyle=':')
+    ax.set_xlabel('Time /days')
+    legend = ax.legend(title='COVID-19 SEIR model - blood types distribution (beta)')
+    
+    
+    ax = fig.add_subplot(212)
+    
+    C = np.arange(0.1, 1.01, 0.01)
+    BD = []
+    for c in C:
+        tCs = scaled_tC(c)
+    
+        X, S, E, I, R = solve(model, population, E0, beta0, days0, beta1,
+                                  gamma, sigma, tCs)
+    
+        BD.append(I[:, int(i/2)] / np.sum(I[:, int(i/2)]) / BT)
+    
+    BD = np.array(BD)
+    for i, bd in enumerate(BD.T):
+        ax.plot(C, bd, alpha=0.5, label="blood type: " + bloodTypes[i])
+    
+    ax.grid(linestyle=':')
+    legend = ax.legend(title='COVID-19 SEIR model (beta)\nrelative blood types distribution over transmission coefficient')
+    ax.set_xlabel('Transmission coefficient')
+    ax.set_xlim(1.0, 0.0)
+    
+    cursor = matplotlib.widgets.Cursor(ax, color='black', linewidth=1 )
+    
+    print('empirical relative BT distribution hospital: 1.21, 1.09, 1.48, 0.67 from paper ("overall")')
+    
+    if 1:
+        plt.show()
+    else:
+        plt.savefig('AB0.png')
