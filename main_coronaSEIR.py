@@ -4,6 +4,7 @@ import scipy.integrate
 import matplotlib.pyplot as plt
 import matplotlib.widgets  # Cursor
 import matplotlib.dates
+import matplotlib.ticker
 
 import shared
 import world_data
@@ -153,6 +154,12 @@ ax.plot([min(X), max(X)], [intensiveUnits, intensiveUnits], 'b-.', alpha=0.5, lw
 
 ax.set_xlabel('Time /days')
 ax.set_ylim(bottom=1.0)
+ax.xaxis.set_major_locator(matplotlib.dates.MonthLocator())
+ax.xaxis.set_minor_locator(matplotlib.dates.WeekdayLocator())
+ax.yaxis.set_major_locator(matplotlib.ticker.LogLocator(numticks=10, base=10.0, subs=(1.0,)))
+ax.yaxis.set_minor_locator(matplotlib.ticker.LogLocator(numticks=10, base=10.0,
+                                                        subs=np.arange(2, 10) * .1))
+
 
 ax.grid(linestyle=':')  #b=True, which='major', c='w', lw=2, ls='-')
 if EXCLUDECOUNTRIES:
