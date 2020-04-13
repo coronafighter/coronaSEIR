@@ -28,7 +28,7 @@ d = json.loads(s)
 
 # todo check for unknown excluded countries
 def get_country_xcdr(country='all', province='all', excludeCountries=[], excludeProvinces=[],
-                     dateOffset=0, returnLists=False, returnDates=False):
+                     dateOffset=0, returnLists=False, returnDates=False, verbose=True):
     country = '' if country == 'all' else country  # empty string is same as all
     province = '' if province == 'all' else province
     countries = {}
@@ -111,10 +111,11 @@ def get_country_xcdr(country='all', province='all', excludeCountries=[], exclude
             print(provinces)
         raise Exception("get_country_xcdr empty - country '%s' or province '%s' not found?" % (country, province))
 
-    print("todays date: %s" % datetime.date.today())
-    print("data points for %s: %s" % (country, len(listXYYY)))
-    print("first data: %s" % min(XDatesAllNonEmpty).date())
-    print("latest data: %s (you can update the data manually by running fetch_data.py)" % max(XDatesAll).date())
+    if verbose:
+        print("todays date: %s" % datetime.date.today())
+        print("data points for %s: %s" % (country, len(listXYYY)))
+        print("first data: %s" % min(XDatesAllNonEmpty).date())
+        print("latest data: %s (you can update the data manually by running fetch_data.py)" % max(XDatesAll).date())
 
     return listXYYY
 
