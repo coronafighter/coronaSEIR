@@ -7,6 +7,7 @@ FILENAME = 'covid-19_data.json'
 import datetime
 import numpy as np
 import scipy.ndimage.interpolation  # shift function
+import math
 
 import world_data
 
@@ -21,6 +22,11 @@ def get_offset_X(XCDR_data, D_model, dataOffset='auto'):
     if dataOffset == 'auto':
         assert (max(X_days) - min(X_days) + 1) == len(X_days)  # continous data
         D_data = XCDR_data[:,2]
+
+        # log to emphasize lower values (relative error)   http://wrogn.com/curve-fitting-with-minimized-relative-error/
+        D_data = np.log(np.array(D_data, dtype='float64') + 1)
+        D_model = np.log(D_model + 1)
+
         mini = 9e9
         miniO = None
         for o in range(0,150):  # todo: dat number...
