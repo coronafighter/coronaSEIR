@@ -20,12 +20,12 @@ def get_offset_X(XCDR_data, D_model, dataOffset='auto'):
     X_days = world_data.dates_to_days(XCDR_data[:,0])
     X_days = np.array(X_days) - min(X_days)
     if dataOffset == 'auto':
-        assert (max(X_days) - min(X_days) + 1) == len(X_days)  # continous data
+        assert (max(X_days) - min(X_days) + 1) == len(X_days)  # continuous data
         D_data = XCDR_data[:,2]
 
         # log to emphasize lower values (relative error)   http://wrogn.com/curve-fitting-with-minimized-relative-error/
-        D_data = np.log(np.array(D_data, dtype='float64') + 1)
-        D_model = np.log(D_model + 1)
+        #D_data = np.log(np.array(D_data, dtype='float64') + 1)
+        #D_model = np.log(D_model + 1)
 
         mini = 9e9
         miniO = None
