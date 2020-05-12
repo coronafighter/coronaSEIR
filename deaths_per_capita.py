@@ -25,21 +25,24 @@ for country in countries:
                                                          returnDates=True))
         cases = int(XCDR_data[-1, 1])  # last row, third column
         deaths = int(XCDR_data[-1, 2])  # last row, third column
+        deathDelta = int(XCDR_data[-1, 2] - XCDR_data[-8, 2])
         if deaths < 10:
             continue
         recovered = int(XCDR_data[-1, 3])  # last row, third column
         date = XCDR_data[-1, 0]
-        countryDeaths.append((country, cases, deaths, recovered, date))
+        countryDeaths.append((country, cases, deaths, recovered, date, deathDelta))
 
     except Exception as e:
         print("fail: ", country, sys.exc_info()[0], e)
 
 countryDeathsPC = []
+countryDeathsDeltaPC = []
 for ccdrd in countryDeaths:
-    country, cases, deaths, recovered, date = ccdrd
+    country, cases, deaths, recovered, date, deathDelta = ccdrd
     try:
         pop = population.get_population(country)
         countryDeathsPC.append((country, deaths * 1.0e6 / pop, deaths, pop, date))
+        countryDeathsDeltaPC.append((country, deathDelta * 1.0e6 / pop, deathDelta, pop, date))
         #countryDeathrate.append((country, 100.0 * deaths / cases, deaths, pop))
     except KeyError:
         print("fail: ", country)
@@ -47,6 +50,9 @@ for ccdrd in countryDeaths:
 print()
 countryDeathsPC = sorted(countryDeathsPC, key = lambda x: x[1])  # sort by second subitem
 countryDeathsPC.reverse()  # in place
+
+countryDeathsDeltaPC = sorted(countryDeathsDeltaPC, key = lambda x: x[1])  # sort by second subitem
+countryDeathsDeltaPC.reverse()  # in place
 
 
 dCountryDeathsPCXY = {}
@@ -62,7 +68,6 @@ for country, trash, trash, trash, trash in countryDeathsPC[0:20]:
     Y = XCDR_data[:,2] / pop * 1.0e6
     dCountryDeathsPCXY[country] = (XCDR_data[:,0], Y)
 
-
 fig = plt.figure(dpi=75, figsize=(20,16))
 ax = fig.add_subplot(111)
 #ax.set_yscale("log", nonposy='clip')
@@ -75,7 +80,13 @@ legend = ax.legend(title='deaths per 1M capita (beta)')
 
 print()
 print('beta, there might be bugs')
+print('current deaths per capita')
 for country, deathsPC, deaths, pop, date in countryDeathsPC[0:20]:
     print("%-15s" % country, ': %10.1f %5d %10d %s' % (deathsPC, deaths, pop, date.strftime("%Y-%m-%d")))
+
+print()
+print('new deaths per capita per week')
+for country, deathsDeltaPC, deathsDelta, pop, date in countryDeathsDeltaPC[0:20]:
+    print("%-15s" % country, ': %10.1f %5d %10d %s' % (deathsDeltaPC, deathsDelta, pop, date.strftime("%Y-%m-%d")))
 
 plt.show()
