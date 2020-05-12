@@ -19,7 +19,7 @@ population = population.get_population(COUNTRY, PROVINCE, EXCLUDECOUNTRIES)
 # --- parameters ---
 
 if COUNTRY == 'Germany':
-    intensiveUnits = 28000 / 1.5 / 2  # ICU units available  # Germany: 28000  # note that infections might show up in local clusters making things worse
+    intensiveUnits = 40000 / 2.0  # ICU units available  # Germany: 28000  # note that infections might show up in local clusters making things worse
 else:
     intensiveUnits = population * 1.0 / 10000  # rough guess for industrialized country
 
@@ -31,13 +31,13 @@ E0 = 1  # exposed at initial time step
 daysTotal = 365  # total days to model
 dataOffset = 'auto'  # position of real world data relative to model in whole days. 'auto' will choose optimal offset based on matching of deaths curves
 
-days0 = 57  # Germany:57 France: Italy:62? Spain:68? 'all'butChina:65? days before lockdown measures - you might need to adjust this according to output "lockdown measures start:"
+days0 = 70  # !!! days before lockdown measures - you might need to adjust this according to output "lockdown measures start:"
 
-r0 = 3.0  # https://en.wikipedia.org/wiki/Basic_reproduction_number
-r1 = 1.0  # reproduction number after quarantine measures - https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3539694
+r0 = 2.4  # https://en.wikipedia.org/wiki/Basic_reproduction_number
+r1 = 0.85  # reproduction number after quarantine measures - https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3539694
           # it seems likely that measures will become more restrictive if r1 is not small enough
 
-timePresymptomatic = 2.5  # almost half infections take place before symptom onset (Drosten) https://www.medrxiv.org/content/10.1101/2020.03.08.20032946v1.full.pdf  
+timePresymptomatic = 2.0  # almost half infections take place before symptom onset (Drosten) https://www.medrxiv.org/content/10.1101/2020.03.08.20032946v1.full.pdf  
 
 # I in this model is maybe better described as 'Infectors'? Event infectious persons in quarantine do not count.
 sigma = 1.0 / (5.2 - timePresymptomatic)  # The rate at which an exposed person becomes infectious.  symptom onset - presympomatic
@@ -46,7 +46,7 @@ generationTime = 4.6  # https://www.medrxiv.org/content/10.1101/2020.03.05.20031
 gamma = 1.0 / (2.0 * (generationTime - 1.0 / sigma))  # The rate an infectious is not recovers and moves into the resistant phase. Note that for the model it only means he does not infect anybody any more.
 
 noSymptoms = 0.35  # https://www.zmescience.com/medicine/iceland-testing-covid-19-0523/  but virus can already be found in throat 2.5 days before symptoms (Drosten)
-findRatio = (1.0 - noSymptoms) / 4.0  # wild guess! italy:16? germany:4 south korea: 4?  a lot of the mild cases will go undetected  assuming 100% correct tests
+findRatio = (1.0 - noSymptoms) / 17.0  # !!! wild guess! a lot of the mild cases will go undetected  assuming 100% correct tests
 
 timeInHospital = 12
 timeInfected = 1.0 / gamma  # better timeInfectious?
@@ -58,7 +58,7 @@ testLag = 3
 symptomToHospitalLag = 5
 hospitalToIcuLag = 5
 
-infectionFatalityRateA = 0.01  # Diamond Princess, age corrected
+infectionFatalityRateA = 0.005  # Diamond Princess age corrected, Heinsberg
 infectionFatalityRateB = infectionFatalityRateA * 3.0  # higher lethality without ICU - by how much?  even higher without oxygen and meds
 icuRate = infectionFatalityRateA * 2  # Imperial College NPI study: hospitalized/ICU/fatal = 6/2/1
 
@@ -156,9 +156,9 @@ ax.set_xlabel('Time /days')
 ax.set_ylim(bottom=1.0)
 ax.xaxis.set_major_locator(matplotlib.dates.MonthLocator())
 ax.xaxis.set_minor_locator(matplotlib.dates.WeekdayLocator())
-ax.yaxis.set_major_locator(matplotlib.ticker.LogLocator(numticks=10, base=10.0, subs=(1.0,)))
-ax.yaxis.set_minor_locator(matplotlib.ticker.LogLocator(numticks=10, base=10.0,
-                                                        subs=np.arange(2, 10) * .1))
+ax.yaxis.set_major_locator(matplotlib.ticker.LogLocator(numticks=100, base=10.0, subs=(1.0,)))
+ax.yaxis.set_minor_locator(matplotlib.ticker.LogLocator(numticks=100, base=10.0,
+                                                        subs=np.arange(2, 10) * 0.1))
 
 
 ax.grid(linestyle=':')  #b=True, which='major', c='w', lw=2, ls='-')
