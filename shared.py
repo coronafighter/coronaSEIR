@@ -45,3 +45,18 @@ def model_to_world_time(X, XCDR_data):
     for i, x in enumerate(X):
         X2[i] = min(XCDR_data[:,0]) + datetime.timedelta(days=int(x))
     return X2
+
+
+# https://stackoverflow.com/questions/13728392/moving-average-or-running-mean
+def moving_average(X, n=7, noRightZero=False):
+    cumSum = [0]
+    A = []
+    average = 0
+    for i, x in enumerate(X):
+        cumSum.append(cumSum[i] + x)
+        if i >= n:
+            average = (cumSum[i] - cumSum[i-n]) / float(n)
+        if noRightZero and x == 0:
+            average = 0
+        A.append(average)
+    return A

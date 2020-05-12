@@ -22,6 +22,7 @@ This is not a scientific or medical tool. Use at your own risk. BETA! There migh
 * Real world data automatically updated every three hours from Johns Hopkins CSSE (https://github.com/CSSEGISandData/2019-nCoV) via https://github.com/ExpDev07/coronavirus-tracker-api
 * country population data (https://github.com/samayo/country-json)
 * can exclude countries, e.g. world without China
+* calculate R0
 * check out screenshots below
 
 ## Installation / Requirements / Documentation
