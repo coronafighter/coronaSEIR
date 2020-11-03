@@ -48,6 +48,7 @@ def scaled_tC(c):
 DEFAULTCROSSINFECTIONFACTOR = 0.65  # CIF e.g. IA --> SB 0.5  (direct, e.g. IA --> SA is 1.0)
 
 d = 1.0  # Is IA --> SA more easy than I0 --> SA ?
+# d = 0.65  # Is IA --> SA more easy than I0 --> SA ?
 
 # 0.9: 0.56 1.6e-6
 # 0.8: 0.59 3.8e-7

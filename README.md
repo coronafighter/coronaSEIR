@@ -23,7 +23,9 @@ This is not a scientific or medical tool. Use at your own risk. BETA! There migh
 * country population data (https://github.com/samayo/country-json)
 * can exclude countries, e.g. world without China
 * calculate and chart R0
+* ABH-Branch: experiments about blood type and COVID-19. Correlation of country models vs real data
 * check out screenshots below
+
 
 ## Installation / Requirements / Documentation
 Needs Python 3.x installed. Tested on Ubuntu. Should run on Window and Mac, too.
@@ -113,6 +115,7 @@ some more in the source code
 ![model run](https://github.com/coronafighter/coronaSEIR/blob/master/screenshots/model_run2.png)
 ![data](https://github.com/coronafighter/coronaSEIR/blob/master/screenshots/data.png)
 ![data](https://github.com/coronafighter/coronaSEIR/blob/master/screenshots/AB0.png)
+![data](https://github.com/coronafighter/coronaSEIR/blob/ABH/screenshots/ABH_model_vs_world.png)
 
 ## License
 MIT license
