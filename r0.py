@@ -53,7 +53,7 @@ ax = fig.add_subplot(111)
 ax.set_ylim(top=7.0)
 ax2 = ax.twinx()
 ax2.set_ylabel('NEW PER DAY')
-ax2.set_yscale("log", nonposy='clip')
+ax2.set_yscale("log", nonpositive='clip')
 
 ax.grid(linestyle=':')
 
