@@ -7,13 +7,7 @@ import time
 import shared
 import fetch_data
 
-try:
-    if (not os.path.exists(shared.FILENAME) or
-        os.path.getmtime(shared.FILENAME) < time.time() - shared.CACHETIMESECONDS):
-            fetch_data.fetch()
-except fetch_data.urllib.request.HTTPError:
-    print("could not reach API server - trying (outdated) local file - press <enter>")
-    input()
+fetch_data.handle_fetch()
 
 def dates_to_days(XDates):
     XDays = []

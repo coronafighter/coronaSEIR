@@ -1,7 +1,9 @@
 
 CACHETIMESECONDS = 3600 * 3  # be nice to the API to not get banned
 
-APIURL = 'https://coronavirus-tracker-api.herokuapp.com/all'
+APIURL = 'https://covid-tracker-us.herokuapp.com/all'
+APIURLFALLBACK = 'https://coronavirus-tracker-api.herokuapp.com/all'
+
 FILENAME = 'covid-19_data.json'
 
 import datetime
