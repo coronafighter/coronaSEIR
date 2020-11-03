@@ -58,14 +58,15 @@ No GUI, you need to alter the script and run again to experiment.
 Note: Make sure you got correct number for population and available ICU units for your country.
   
 ## ToDo
+* change main_coronaSEIR to daily changes instead of cumulated numbers
 * idea: compare optimal fit doubling time for all countries (and against countries blood type distribution)
 * idea: calculate for all countries to compare how badly hit (days0 needs to be set manually)
 * add data about lockdown starting times, also make it possible to enter as a date
 * make R0 and days0 lists to be able to have more than two phases
 * add data about intensive care units
-* ventilator patients separately?
 * make parsing code cleaner / simpler
 * be more precise in differentiation between hospitalization and ICU
+* n ventilator patients separately?
 * X automatic date offset
 * X maybe find a better fit with lower R0 - the infectious time seems to be quite short?
 * X add proper list of populations

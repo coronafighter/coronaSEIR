@@ -28,7 +28,7 @@ else:
 logPlot = 1
 
 E0 = 1  # exposed at initial time step
-daysTotal = 365  # total days to model
+daysTotal = 565  # total days to model
 dataOffset = 'auto'  # position of real world data relative to model in whole days. 'auto' will choose optimal offset based on matching of deaths curves
 
 days0 = 70  # !!! days before lockdown measures - you might need to adjust this according to output "lockdown measures start:"
