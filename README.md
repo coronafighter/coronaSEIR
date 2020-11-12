@@ -60,6 +60,7 @@ No GUI, you need to alter the script and run again to experiment.
 Note: Make sure you got correct number for population and available ICU units for your country.
   
 ## ToDo
+* ABH: Is it possible to measure epidemic progression through blood type monitoring of cases?
 * change main_coronaSEIR to daily changes instead of cumulated numbers
 * idea: compare optimal fit doubling time for all countries (and against countries blood type distribution)
 * idea: calculate for all countries to compare how badly hit (days0 needs to be set manually)

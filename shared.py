@@ -9,7 +9,6 @@ FILENAME = 'covid-19_data.json'
 import datetime
 import numpy as np
 import scipy.ndimage.interpolation  # shift function
-import math
 
 import world_data
 
