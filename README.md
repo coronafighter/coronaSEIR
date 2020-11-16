@@ -5,6 +5,8 @@ Simple SEIR model Python script for the COVID-19 pandemic with real world data.
 Purpose is to easily be able to experiment and better understand what is happening currently and what might happen in the near future.  
   
 What I learned: Activating containment measures early can save lives.  
+  
+There is another branch in this repository that is about blood type (ABH, ABO, AB0) extended SEIR modeling and correlating model data vs real world data: https://github.com/coronafighter/coronaSEIR/tree/ABH  
 
 ## Other models
 * Nice webgui: http://gabgoh.github.io/COVID/index.html  
@@ -113,9 +115,7 @@ some more in the source code
 ## Screenshots
 ![model run](https://github.com/coronafighter/coronaSEIR/blob/master/screenshots/model_run.png)
 ![model run](https://github.com/coronafighter/coronaSEIR/blob/master/screenshots/model_run2.png)
-![data](https://github.com/coronafighter/coronaSEIR/blob/master/screenshots/data.png)
-![data](https://github.com/coronafighter/coronaSEIR/blob/master/screenshots/AB0.png)
-![data](https://github.com/coronafighter/coronaSEIR/blob/ABH/screenshots/ABH_model_vs_world.png)
+![data](https://github.com/coronafighter/coronaSEIR/blob/master/screenshots/data.png)  
 
 ## License
 MIT license
