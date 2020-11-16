@@ -79,15 +79,17 @@ def run(crossInfectionFactor=0.5):
         X, S, E, I, R = prepare_and_solve(BT, crossInfectionFactor)
         countryDataPBTD[country]['I'] = I
         results.append([country, np.max(np.sum(I, axis=0)), BT])
-    results = sorted(results, key=lambda x: x[1])
+    results = sorted(results, key=lambda x: -x[1])
 
 
 if __name__ == '__main__':
 
     run(0.5)
 
+    R = np.array(results)
+    maximum = R[:,1].max()
     for r in results:
-        print("%35s %8i" % (r[0], r[1]), r[2])
+        print("%35s %.1f" % (r[0], r[1] / maximum * 100.0), r[2])
 
     fig = plt.figure(dpi=75, figsize=(20, 16))
     ax = fig.add_subplot(211)
